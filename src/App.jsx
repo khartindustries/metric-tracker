@@ -4,6 +4,33 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell
 } from "recharts";
 
+// ─── K-HART BRAND TOKENS ─────────────────────────────────────────────────────
+const B = {
+  hartyGreen:  "#95C93D",   // Primary accent
+  spyderGreen: "#48582C",   // Dark green
+  deepBlack:   "#212121",   // True black
+  raptorYellow:"#FED110",   // Sparingly only
+  // UI surfaces — dark shades of Deep Black
+  bg:          "#1A1A1A",   // Page background
+  surface:     "#252525",   // Card surface
+  surfaceHigh: "#2E2E2E",   // Elevated card
+  border:      "#383838",   // Borders
+  borderLight: "#424242",   // Lighter border
+  // Text
+  textPrimary: "#F0F0F0",   // Main text
+  textSecond:  "#A8A8A8",   // Secondary text
+  textMuted:   "#686868",   // Muted / labels
+  // Feedback
+  positive:    "#95C93D",   // Up delta — Harty Green
+  negative:    "#E05050",   // Down delta
+  // Platform colours — all K-Hart palette harmonised
+  googlePaid:  "#95C93D",   // Harty Green
+  googleOrganic:"#6BA82E",  // Slightly darker green
+  analytics:   "#FED110",   // Raptor Yellow (used here as analytics accent)
+  facebook:    "#6A9E5A",   // Muted green tint for FB
+  instagram:   "#48582C",   // Spyder Green for IG
+};
+
 // ─── GLOBAL CONTEXT ──────────────────────────────────────────────────────────
 const DashContext = createContext(null);
 const useDash = () => useContext(DashContext);
@@ -16,12 +43,7 @@ function useBreakpoint() {
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
-  return {
-    width,
-    isMobile:  width < 640,
-    isTablet:  width >= 640 && width < 1024,
-    isDesktop: width >= 1024,
-  };
+  return { width, isMobile: width < 640, isTablet: width >= 640 && width < 1024, isDesktop: width >= 1024 };
 }
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -42,31 +64,31 @@ function generateDays(n, seeds, seedBase = 1) {
 
 const CAMPAIGNS = {
   googlePaid: [
-    { id:"gp1", name:"Brand — Exact Match",       color:"#EA4335", seeds:{ impressions:8200, clicks:620, spend:190, conversions:14 }, seedBase:11 },
-    { id:"gp2", name:"Competitor Conquesting",     color:"#FF8A65", seeds:{ impressions:5100, clicks:280, spend:95,  conversions:7  }, seedBase:22 },
-    { id:"gp3", name:"Generic — High Intent",      color:"#FFAB40", seeds:{ impressions:4400, clicks:200, spend:82,  conversions:5  }, seedBase:33 },
-    { id:"gp4", name:"Retargeting — Cart Abandon", color:"#FFD54F", seeds:{ impressions:1960, clicks:88,  spend:38,  conversions:4  }, seedBase:44 },
+    { id:"gp1", name:"Brand — Exact Match",       color:"#95C93D", seeds:{ impressions:8200, clicks:620, spend:190, conversions:14 }, seedBase:11 },
+    { id:"gp2", name:"Competitor Conquesting",     color:"#7AB832", seeds:{ impressions:5100, clicks:280, spend:95,  conversions:7  }, seedBase:22 },
+    { id:"gp3", name:"Generic — High Intent",      color:"#5E9020", seeds:{ impressions:4400, clicks:200, spend:82,  conversions:5  }, seedBase:33 },
+    { id:"gp4", name:"Retargeting — Cart Abandon", color:"#FED110", seeds:{ impressions:1960, clicks:88,  spend:38,  conversions:4  }, seedBase:44 },
   ],
   googleOrganic: [
-    { id:"go1", name:"Blog / Editorial",           color:"#34A853", seeds:{ impressions:4200, clicks:310, sessions:280, conversions:6 }, seedBase:55 },
-    { id:"go2", name:"Product Pages",              color:"#00C853", seeds:{ impressions:2800, clicks:200, sessions:180, conversions:5 }, seedBase:66 },
-    { id:"go3", name:"Landing Pages",              color:"#69F0AE", seeds:{ impressions:1700, clicks:110, sessions:95,  conversions:3 }, seedBase:77 },
+    { id:"go1", name:"Blog / Editorial",           color:"#6BA82E", seeds:{ impressions:4200, clicks:310, sessions:280, conversions:6 }, seedBase:55 },
+    { id:"go2", name:"Product Pages",              color:"#5A9028", seeds:{ impressions:2800, clicks:200, sessions:180, conversions:5 }, seedBase:66 },
+    { id:"go3", name:"Landing Pages",              color:"#48582C", seeds:{ impressions:1700, clicks:110, sessions:95,  conversions:3 }, seedBase:77 },
   ],
   ga4: [
-    { id:"ga1",  name:"Paid Search",               color:"#F9AB00", seeds:{ sessions:1800, users:1300, pageviews:5200, conversions:28, revenue:1400 }, seedBase:154 },
-    { id:"ga2",  name:"Organic Search",            color:"#FCD34D", seeds:{ sessions:1200, users:900,  pageviews:3600, conversions:18, revenue:900  }, seedBase:165 },
-    { id:"ga3",  name:"Paid Social",               color:"#FDE68A", seeds:{ sessions:800,  users:620,  pageviews:2200, conversions:11, revenue:560  }, seedBase:176 },
-    { id:"ga4d", name:"Direct / Email",            color:"#FFF176", seeds:{ sessions:480,  users:370,  pageviews:1400, conversions:8,  revenue:380  }, seedBase:187 },
+    { id:"ga1",  name:"Paid Search",               color:"#FED110", seeds:{ sessions:1800, users:1300, pageviews:5200, conversions:28, revenue:1400 }, seedBase:154 },
+    { id:"ga2",  name:"Organic Search",            color:"#D4AE0E", seeds:{ sessions:1200, users:900,  pageviews:3600, conversions:18, revenue:900  }, seedBase:165 },
+    { id:"ga3",  name:"Paid Social",               color:"#A88A0B", seeds:{ sessions:800,  users:620,  pageviews:2200, conversions:11, revenue:560  }, seedBase:176 },
+    { id:"ga4d", name:"Direct / Email",            color:"#7A6408", seeds:{ sessions:480,  users:370,  pageviews:1400, conversions:8,  revenue:380  }, seedBase:187 },
   ],
   facebook: [
-    { id:"fb1", name:"Prospecting — Lookalike",    color:"#1877F2", seeds:{ impressions:14000, clicks:310, spend:82, conversions:5 }, seedBase:88 },
-    { id:"fb2", name:"Retargeting — Visitors",     color:"#42A5F5", seeds:{ impressions:8200,  clicks:180, spend:48, conversions:3 }, seedBase:99 },
-    { id:"fb3", name:"Brand Awareness",            color:"#90CAF9", seeds:{ impressions:6100,  clicks:95,  spend:32, conversions:2 }, seedBase:110 },
+    { id:"fb1", name:"Prospecting — Lookalike",    color:"#95C93D", seeds:{ impressions:14000, clicks:310, spend:82, conversions:5 }, seedBase:88 },
+    { id:"fb2", name:"Retargeting — Visitors",     color:"#6BA82E", seeds:{ impressions:8200,  clicks:180, spend:48, conversions:3 }, seedBase:99 },
+    { id:"fb3", name:"Brand Awareness",            color:"#48582C", seeds:{ impressions:6100,  clicks:95,  spend:32, conversions:2 }, seedBase:110 },
   ],
   instagram: [
-    { id:"ig1", name:"Stories — Product Demo",     color:"#E1306C", seeds:{ impressions:18000, clicks:360, spend:55, conversions:6 }, seedBase:121 },
-    { id:"ig2", name:"Feed — UGC Creative",        color:"#F06292", seeds:{ impressions:13000, clicks:280, spend:42, conversions:5 }, seedBase:132 },
-    { id:"ig3", name:"Reels — Top of Funnel",      color:"#F48FB1", seeds:{ impressions:10000, clicks:165, spend:28, conversions:3 }, seedBase:143 },
+    { id:"ig1", name:"Stories — Product Demo",     color:"#95C93D", seeds:{ impressions:18000, clicks:360, spend:55, conversions:6 }, seedBase:121 },
+    { id:"ig2", name:"Feed — UGC Creative",        color:"#7AB832", seeds:{ impressions:13000, clicks:280, spend:42, conversions:5 }, seedBase:132 },
+    { id:"ig3", name:"Reels — Top of Funnel",      color:"#48582C", seeds:{ impressions:10000, clicks:165, spend:28, conversions:3 }, seedBase:143 },
   ],
 };
 Object.values(CAMPAIGNS).flat().forEach(c => { c.data = generateDays(180, c.seeds, c.seedBase); });
@@ -84,7 +106,7 @@ const TOP_SEARCH_TERMS = [
   { term:"business analytics dashboard",     searches:5400,  cpc:5.55, ctr:4.6, position:4.5, paid_clicks:248,  organic_clicks:432,  competition:"Medium" },
 ];
 
-const COMP_COLORS = { High:"#EF4444", Medium:"#F59E0B", Low:"#22C55E" };
+const COMP_COLORS = { High:"#E05050", Medium:"#FED110", Low:"#95C93D" };
 const fmtK = v => v >= 1e6 ? `${(v/1e6).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(1)}K` : String(v ?? 0);
 const fmtD = v => `$${fmtK(v)}`;
 const RANGE_OPTS = ["7d","30d","90d"];
@@ -96,7 +118,6 @@ const COMPARE_OPTS = [
 ];
 
 function rangeN(r) { return r==="7d"?7:r==="30d"?30:90; }
-
 function slicePeriods(data, range, compareMode) {
   const n = rangeN(range);
   const curr = data.slice(-n);
@@ -106,7 +127,6 @@ function slicePeriods(data, range, compareMode) {
   else if (compareMode==="yoy") prev = data.slice(0,n);
   return { curr, prev };
 }
-
 function sumKeys(rows, keys) {
   return Object.fromEntries(keys.map(k => [k, rows.reduce((a,b) => a+(b[k]||0), 0)]));
 }
@@ -118,79 +138,35 @@ function pctDelta(curr, prev) {
 // ─── CAMPAIGN CHECKBOX TOGGLE ─────────────────────────────────────────────────
 function useCampaignVisibility(campaigns) {
   const [hidden, setHidden] = useState(new Set());
-  const toggle = (id) => setHidden(prev => {
-    const next = new Set(prev);
-    next.has(id) ? next.delete(id) : next.add(id);
-    return next;
-  });
+  const toggle = (id) => setHidden(prev => { const n = new Set(prev); n.has(id)?n.delete(id):n.add(id); return n; });
   const toggleAll = () => {
-    const allIds = campaigns.map(c => c.id);
-    const allHidden = allIds.every(id => hidden.has(id));
-    setHidden(allHidden ? new Set() : new Set(allIds));
+    const allIds = campaigns.map(c=>c.id);
+    setHidden(allIds.every(id=>hidden.has(id)) ? new Set() : new Set(allIds));
   };
-  const visible = campaigns.filter(c => !hidden.has(c.id));
-  return { hidden, toggle, toggleAll, visible };
+  return { hidden, toggle, toggleAll, visible: campaigns.filter(c=>!hidden.has(c.id)) };
 }
 
 // ─── CAMPAIGN FILTER BAR ──────────────────────────────────────────────────────
 function CampaignFilterBar({ campaigns, hidden, toggle, toggleAll }) {
   const bp = useBreakpoint();
-  const allHidden = campaigns.every(c => hidden.has(c.id));
-  const someHidden = campaigns.some(c => hidden.has(c.id));
-
+  const allHidden = campaigns.every(c=>hidden.has(c.id));
+  const someHidden = campaigns.some(c=>hidden.has(c.id));
   return (
-    <div style={{
-      display:"flex", alignItems:"center", flexWrap:"wrap", gap:6,
-      background:"#0C0E1E", borderRadius:12,
-      padding: bp.isMobile ? "8px 10px" : "10px 14px",
-      border:"1px solid #1E2140", marginBottom:16,
-    }}>
-      {/* Select all */}
-      <button onClick={toggleAll} style={{
-        display:"flex", alignItems:"center", gap:6, padding:"4px 10px",
-        borderRadius:7, border:"1px solid #2E3152", background:"transparent",
-        cursor:"pointer", fontSize:10, fontFamily:"'IBM Plex Mono',monospace",
-        color:"#7A7F99", transition:"all 0.12s",
-      }}
-        onMouseEnter={e=>e.currentTarget.style.borderColor="#4A4F6A"}
-        onMouseLeave={e=>e.currentTarget.style.borderColor="#2E3152"}>
-        <span style={{
-          width:13, height:13, borderRadius:3,
-          border:`1.5px solid ${someHidden?"#4A5080":"#818CF8"}`,
-          background: allHidden ? "transparent" : someHidden ? "#2E3152" : "#818CF8",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
-          position:"relative"
-        }}>
-          {!allHidden && someHidden && <span style={{ width:7, height:2, background:"#818CF8", borderRadius:1, position:"absolute" }}/>}
-          {!allHidden && !someHidden && <span style={{ color:"#0C0E1E", fontSize:9, fontWeight:900, lineHeight:1 }}>✓</span>}
+    <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap", gap:6, background:B.bg, borderRadius:8, padding:bp.isMobile?"8px 10px":"10px 14px", border:`1px solid ${B.border}`, marginBottom:16 }}>
+      <button onClick={toggleAll} style={{ display:"flex", alignItems:"center", gap:6, padding:"4px 10px", borderRadius:6, border:`1px solid ${B.borderLight}`, background:"transparent", cursor:"pointer", fontSize:10, fontFamily:"'Barlow',sans-serif", color:B.textSecond, letterSpacing:"0.05em" }}>
+        <span style={{ width:13, height:13, borderRadius:2, border:`1.5px solid ${someHidden?B.borderLight:B.hartyGreen}`, background:allHidden?"transparent":someHidden?B.surface:B.hartyGreen, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, position:"relative" }}>
+          {!allHidden && someHidden && <span style={{ width:7, height:2, background:B.hartyGreen, borderRadius:1, position:"absolute" }}/>}
+          {!allHidden && !someHidden && <span style={{ color:B.deepBlack, fontSize:9, fontWeight:900, lineHeight:1 }}>✓</span>}
         </span>
-        All
+        ALL
       </button>
-
-      <div style={{ width:1, height:18, background:"#1E2140" }}/>
-
-      {/* Per-campaign pills */}
+      <div style={{ width:1, height:18, background:B.border }}/>
       {campaigns.map(c => {
         const checked = !hidden.has(c.id);
         return (
-          <button key={c.id} onClick={() => toggle(c.id)} style={{
-            display:"flex", alignItems:"center", gap:7, padding:"4px 11px",
-            borderRadius:99, border:`1.5px solid ${checked ? c.color+"66" : "#1E2140"}`,
-            background: checked ? c.color+"18" : "transparent",
-            cursor:"pointer", fontSize:10, fontFamily:"'IBM Plex Mono',monospace",
-            color: checked ? c.color : "#3A3F5A",
-            transition:"all 0.12s",
-            opacity: checked ? 1 : 0.5,
-          }}>
-            {/* Custom checkbox */}
-            <span style={{
-              width:12, height:12, borderRadius:3, flexShrink:0,
-              border:`1.5px solid ${checked ? c.color : "#2E3152"}`,
-              background: checked ? c.color : "transparent",
-              display:"flex", alignItems:"center", justifyContent:"center",
-              transition:"all 0.12s",
-            }}>
-              {checked && <span style={{ color:"#000", fontSize:8, fontWeight:900, lineHeight:1 }}>✓</span>}
+          <button key={c.id} onClick={()=>toggle(c.id)} style={{ display:"flex", alignItems:"center", gap:7, padding:"4px 11px", borderRadius:4, border:`1.5px solid ${checked?c.color+"88":B.border}`, background:checked?c.color+"18":"transparent", cursor:"pointer", fontSize:10, fontFamily:"'Barlow',sans-serif", color:checked?c.color:B.textMuted, transition:"all 0.12s", opacity:checked?1:0.55, letterSpacing:"0.03em" }}>
+            <span style={{ width:12, height:12, borderRadius:2, flexShrink:0, border:`1.5px solid ${checked?c.color:B.borderLight}`, background:checked?c.color:"transparent", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.12s" }}>
+              {checked && <span style={{ color:B.deepBlack, fontSize:8, fontWeight:900, lineHeight:1 }}>✓</span>}
             </span>
             {c.name}
           </button>
@@ -203,24 +179,20 @@ function CampaignFilterBar({ campaigns, hidden, toggle, toggleAll }) {
 // ─── SHARED UI ───────────────────────────────────────────────────────────────
 function Delta({ value, inverted=false }) {
   if (value===null||isNaN(value)) return null;
-  const positive = inverted ? value<0 : value>0;
-  return (
-    <span style={{ fontSize:10, color:positive?"#22C55E":"#EF4444", fontFamily:"monospace", marginLeft:5 }}>
-      {value>0?"▲":"▼"}{Math.abs(value).toFixed(1)}%
-    </span>
-  );
+  const pos = inverted ? value<0 : value>0;
+  return <span style={{ fontSize:10, color:pos?B.positive:B.negative, fontFamily:"'Barlow Condensed',sans-serif", marginLeft:5, fontWeight:600 }}>{value>0?"▲":"▼"}{Math.abs(value).toFixed(1)}%</span>;
 }
 
 function StatCard({ label, curr, prev, color, fmt=fmtK, inverted=false }) {
   const delta = prev!=null ? pctDelta(curr,prev) : null;
   return (
-    <div style={{ background:"#0C0E1E", borderRadius:10, padding:"10px 14px", border:"1px solid #1E2140", flex:"1 1 110px" }}>
-      <div style={{ fontSize:9, fontFamily:"'IBM Plex Mono',monospace", color:"#4A4F6A", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:5 }}>{label}</div>
+    <div style={{ background:B.surface, borderRadius:6, padding:"10px 14px", border:`1px solid ${B.border}`, flex:"1 1 110px", borderTop:`3px solid ${color||B.hartyGreen}` }}>
+      <div style={{ fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", color:B.textMuted, textTransform:"uppercase", letterSpacing:"0.12em", marginBottom:5, fontWeight:600 }}>{label}</div>
       <div style={{ display:"flex", alignItems:"baseline", gap:2 }}>
-        <span style={{ fontSize:17, fontWeight:700, color:color||"#E8EAF2", fontFamily:"'IBM Plex Mono',monospace" }}>{fmt(curr)}</span>
+        <span style={{ fontSize:18, fontWeight:700, color:color||B.textPrimary, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-0.01em" }}>{fmt(curr)}</span>
         <Delta value={delta} inverted={inverted}/>
       </div>
-      {prev!=null && <div style={{ fontSize:9, color:"#2E3152", marginTop:3, fontFamily:"monospace" }}>prev: {fmt(prev)}</div>}
+      {prev!=null && <div style={{ fontSize:9, color:B.textMuted, marginTop:3, fontFamily:"'Barlow Condensed',sans-serif" }}>prev: {fmt(prev)}</div>}
     </div>
   );
 }
@@ -228,11 +200,11 @@ function StatCard({ label, curr, prev, color, fmt=fmtK, inverted=false }) {
 function ChartTooltip({ active, payload, label, fmtVal }) {
   if (!active||!payload?.length) return null;
   return (
-    <div style={{ background:"#1A1C34", border:"1px solid #2E3152", borderRadius:10, padding:"10px 14px", fontSize:11, fontFamily:"'IBM Plex Mono',monospace", maxWidth:240 }}>
-      <div style={{ color:"#7A7F99", marginBottom:6 }}>{label}</div>
+    <div style={{ background:B.surfaceHigh, border:`1px solid ${B.borderLight}`, borderRadius:6, padding:"10px 14px", fontSize:11, fontFamily:"'Barlow',sans-serif", maxWidth:260 }}>
+      <div style={{ color:B.textSecond, marginBottom:6, fontSize:10, letterSpacing:"0.05em" }}>{label}</div>
       {payload.map((p,i)=>(
         <div key={i} style={{ color:p.color, marginBottom:2 }}>
-          {p.name}: <strong>{fmtVal ? fmtVal(p.name,p.value) : fmtK(p.value)}</strong>
+          {p.name}: <strong>{fmtVal?fmtVal(p.name,p.value):fmtK(p.value)}</strong>
         </div>
       ))}
     </div>
@@ -242,8 +214,8 @@ function ChartTooltip({ active, payload, label, fmtVal }) {
 function SectionHeader({ title, accent }) {
   return (
     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
-      <div style={{ width:3, height:20, borderRadius:99, background:accent }}/>
-      <span style={{ fontSize:12, fontFamily:"'IBM Plex Mono',monospace", color:"#7A7F99", textTransform:"uppercase", letterSpacing:"0.12em" }}>{title}</span>
+      <div style={{ width:4, height:22, background:accent||B.hartyGreen }}/>
+      <span style={{ fontSize:11, fontFamily:"'Barlow Condensed',sans-serif", color:B.textSecond, textTransform:"uppercase", letterSpacing:"0.18em", fontWeight:600 }}>{title}</span>
     </div>
   );
 }
@@ -252,11 +224,11 @@ function CompareLabel({ compareMode }) {
   if (!compareMode||compareMode==="none") return null;
   const m = COMPARE_OPTS.find(o=>o.value===compareMode);
   return (
-    <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"3px 10px", borderRadius:99, background:"#1E2140", fontSize:9, fontFamily:"monospace", color:"#818CF8", marginBottom:14 }}>
-      <span style={{ opacity:0.7 }}>⇄</span> Comparing: {m?.label}
-      <span style={{ display:"inline-flex", gap:10, marginLeft:8 }}>
-        <span style={{ color:"#E8EAF2" }}>— current</span>
-        <span style={{ color:"#818CF8", opacity:0.5 }}>- - prev</span>
+    <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"4px 12px", borderRadius:4, background:B.surface, border:`1px solid ${B.hartyGreen}44`, fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", color:B.hartyGreen, marginBottom:14, letterSpacing:"0.08em", fontWeight:600 }}>
+      ⇄ COMPARING: {m?.label?.toUpperCase()}
+      <span style={{ display:"inline-flex", gap:10, marginLeft:8, opacity:0.7 }}>
+        <span style={{ color:B.textPrimary }}>— current</span>
+        <span>- - prev</span>
       </span>
     </div>
   );
@@ -264,8 +236,8 @@ function CompareLabel({ compareMode }) {
 
 function ChartCard({ title, accent, children }) {
   return (
-    <div style={{ background:"#12142A", borderRadius:16, padding:"18px 20px", border:`1px solid ${accent}33`, marginBottom:14 }}>
-      <div style={{ fontSize:12, color:"#C8CADC", fontWeight:600, marginBottom:16 }}>{title}</div>
+    <div style={{ background:B.surface, borderRadius:6, padding:"16px 18px", border:`1px solid ${B.border}`, borderLeft:`3px solid ${accent||B.hartyGreen}`, marginBottom:14 }}>
+      <div style={{ fontSize:11, color:B.textSecond, fontWeight:600, marginBottom:14, fontFamily:"'Barlow Condensed',sans-serif", textTransform:"uppercase", letterSpacing:"0.1em" }}>{title}</div>
       {children}
     </div>
   );
@@ -276,46 +248,35 @@ function CampaignAreaChart({ campaigns, dataKey, height=200, fmtVal }) {
   const { range, compareMode } = useDash();
   const n = rangeN(range);
   const comparing = compareMode && compareMode !== "none";
-
   const data = useMemo(() => {
     if (!campaigns.length) return [];
-    const allCamps = Object.values(CAMPAIGNS).flat();
-    const base = allCamps[0].data.slice(-n);
-    return base.map((row, i) => {
+    const base = Object.values(CAMPAIGNS).flat()[0].data.slice(-n);
+    return base.map((row,i) => {
       const pt = { date: row.date };
       campaigns.forEach(c => {
-        pt[`curr_${c.id}`] = c.data.slice(-n)[i]?.[dataKey] ?? 0;
-        if (comparing) {
-          const { prev } = slicePeriods(c.data, range, compareMode);
-          pt[`prev_${c.id}`] = prev?.[i]?.[dataKey] ?? 0;
-        }
+        pt[`curr_${c.id}`] = c.data.slice(-n)[i]?.[dataKey]??0;
+        if (comparing) { const {prev}=slicePeriods(c.data,range,compareMode); pt[`prev_${c.id}`]=prev?.[i]?.[dataKey]??0; }
       });
       return pt;
     });
   }, [campaigns, range, compareMode, dataKey, n]);
 
-  if (!campaigns.length) return (
-    <div style={{ height, display:"flex", alignItems:"center", justifyContent:"center", color:"#2E3152", fontSize:11, fontFamily:"monospace" }}>
-      No campaigns selected
-    </div>
-  );
+  if (!campaigns.length) return <div style={{ height, display:"flex", alignItems:"center", justifyContent:"center", color:B.textMuted, fontSize:11, fontFamily:"'Barlow',sans-serif" }}>No campaigns selected</div>;
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data}>
-        <defs>
-          {campaigns.map(c=>(
-            <linearGradient key={c.id} id={`ag_${c.id}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={c.color} stopOpacity={0.25}/>
-              <stop offset="95%" stopColor={c.color} stopOpacity={0}/>
-            </linearGradient>
-          ))}
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1E2140"/>
-        <XAxis dataKey="date" tick={{ fill:"#4A4F6A", fontSize:9, fontFamily:"monospace" }} tickLine={false} interval="preserveStartEnd"/>
-        <YAxis tick={{ fill:"#4A4F6A", fontSize:9, fontFamily:"monospace" }} tickLine={false} axisLine={false} tickFormatter={fmtK}/>
+        <defs>{campaigns.map(c=>(
+          <linearGradient key={c.id} id={`ag_${c.id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={c.color} stopOpacity={0.3}/>
+            <stop offset="95%" stopColor={c.color} stopOpacity={0}/>
+          </linearGradient>
+        ))}</defs>
+        <CartesianGrid strokeDasharray="3 3" stroke={B.border}/>
+        <XAxis dataKey="date" tick={{ fill:B.textMuted, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} interval="preserveStartEnd"/>
+        <YAxis tick={{ fill:B.textMuted, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} axisLine={false} tickFormatter={fmtK}/>
         <Tooltip content={<ChartTooltip fmtVal={fmtVal}/>}/>
-        <Legend wrapperStyle={{ fontSize:9, fontFamily:"monospace", color:"#7A7F99" }}/>
+        <Legend wrapperStyle={{ fontSize:10, fontFamily:"'Barlow',sans-serif", color:B.textSecond }}/>
         {campaigns.map(c=>[
           <Area key={`c_${c.id}`} type="monotone" dataKey={`curr_${c.id}`} name={c.name} stroke={c.color} fill={`url(#ag_${c.id})`} strokeWidth={2} dot={false}/>,
           comparing && <Line key={`p_${c.id}`} type="monotone" dataKey={`prev_${c.id}`} name={`${c.name} (prev)`} stroke={c.color} strokeDasharray="4 3" strokeWidth={1.5} dot={false} strokeOpacity={0.4}/>
@@ -328,73 +289,58 @@ function CampaignAreaChart({ campaigns, dataKey, height=200, fmtVal }) {
 function CampaignBarChart({ campaigns, dataKey, height=160, fmtVal }) {
   const { range, compareMode } = useDash();
   const comparing = compareMode && compareMode !== "none";
-
   const data = useMemo(() => campaigns.map(c => {
     const { curr, prev } = slicePeriods(c.data, range, compareMode);
-    return {
-      name: c.name.length>20 ? c.name.slice(0,20)+"…" : c.name,
-      curr: curr.reduce((a,b)=>a+(b[dataKey]||0),0),
-      prev: prev ? prev.reduce((a,b)=>a+(b[dataKey]||0),0) : null,
-      color: c.color,
-    };
+    return { name:c.name.length>22?c.name.slice(0,22)+"…":c.name, curr:curr.reduce((a,b)=>a+(b[dataKey]||0),0), prev:prev?prev.reduce((a,b)=>a+(b[dataKey]||0),0):null, color:c.color };
   }), [campaigns, range, compareMode, dataKey]);
 
-  if (!campaigns.length) return (
-    <div style={{ height, display:"flex", alignItems:"center", justifyContent:"center", color:"#2E3152", fontSize:11, fontFamily:"monospace" }}>
-      No campaigns selected
-    </div>
-  );
+  if (!campaigns.length) return <div style={{ height, display:"flex", alignItems:"center", justifyContent:"center", color:B.textMuted, fontSize:11, fontFamily:"'Barlow',sans-serif" }}>No campaigns selected</div>;
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} layout="vertical" margin={{ left:0, right:24 }} barGap={3}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1E2140" horizontal={false}/>
-        <XAxis type="number" tick={{ fill:"#4A4F6A", fontSize:9, fontFamily:"monospace" }} tickLine={false} axisLine={false} tickFormatter={fmtK}/>
-        <YAxis type="category" dataKey="name" tick={{ fill:"#C8CADC", fontSize:9, fontFamily:"monospace" }} tickLine={false} axisLine={false} width={148}/>
+        <CartesianGrid strokeDasharray="3 3" stroke={B.border} horizontal={false}/>
+        <XAxis type="number" tick={{ fill:B.textMuted, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} axisLine={false} tickFormatter={fmtK}/>
+        <YAxis type="category" dataKey="name" tick={{ fill:B.textSecond, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} axisLine={false} width={155}/>
         <Tooltip content={<ChartTooltip fmtVal={fmtVal}/>}/>
-        {comparing && <Legend wrapperStyle={{ fontSize:9, fontFamily:"monospace", color:"#7A7F99" }}/>}
-        <Bar dataKey="curr" name="Current" radius={[0,4,4,0]} opacity={0.9}>
+        {comparing && <Legend wrapperStyle={{ fontSize:9, fontFamily:"'Barlow',sans-serif", color:B.textSecond }}/>}
+        <Bar dataKey="curr" name="Current" radius={[0,3,3,0]} opacity={0.9}>
           {data.map((e,i)=><Cell key={i} fill={e.color}/>)}
         </Bar>
-        {comparing && <Bar dataKey="prev" name="Prev. period" fill="#4A5080" radius={[0,4,4,0]} opacity={0.45}/>}
+        {comparing && <Bar dataKey="prev" name="Prev. period" fill={B.borderLight} radius={[0,3,3,0]} opacity={0.5}/>}
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
 // ─── CAMPAIGN TABLE ──────────────────────────────────────────────────────────
-function CampaignTable({ allCampaigns, visible, hidden, toggle, toggleAll, metricKeys, fmtCell }) {
+function CampaignTable({ allCampaigns, hidden, toggle, toggleAll, metricKeys, fmtCell }) {
   const { range, compareMode } = useDash();
   const [sortKey, setSortKey] = useState(metricKeys[0]);
   const [sortDir, setSortDir] = useState("desc");
   const comparing = compareMode && compareMode !== "none";
-
   const rows = allCampaigns.map(c => {
     const { curr, prev } = slicePeriods(c.data, range, compareMode);
     return { ...c, currSum:sumKeys(curr,metricKeys), prevSum:prev?sumKeys(prev,metricKeys):null };
   }).sort((a,b)=>sortDir==="desc"?b.currSum[sortKey]-a.currSum[sortKey]:a.currSum[sortKey]-b.currSum[sortKey]);
 
+  const thStyle = { padding:"9px 14px", fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", textTransform:"uppercase", letterSpacing:"0.12em", borderBottom:`1px solid ${B.border}`, fontWeight:600 };
+
   return (
-    <div style={{ background:"#0C0E1E", borderRadius:12, border:"1px solid #1E2140", overflow:"hidden", marginTop:14 }}>
+    <div style={{ background:B.bg, borderRadius:6, border:`1px solid ${B.border}`, overflow:"hidden", marginTop:14 }}>
       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
         <thead>
-          <tr style={{ background:"#12142A" }}>
-            <th style={{ width:36, padding:"9px 0 9px 14px", borderBottom:"1px solid #1E2140" }}>
-              {/* header all-toggle */}
-              <span onClick={toggleAll} style={{
-                width:13, height:13, borderRadius:3, border:`1.5px solid #4A5080`,
-                background: allCampaigns.every(c=>!hidden.has(c.id)) ? "#818CF8" : allCampaigns.some(c=>!hidden.has(c.id)) ? "#2E3152" : "transparent",
-                display:"inline-flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
-                position:"relative"
-              }}>
-                {allCampaigns.every(c=>!hidden.has(c.id)) && <span style={{ color:"#0C0E1E", fontSize:8, fontWeight:900 }}>✓</span>}
-                {!allCampaigns.every(c=>!hidden.has(c.id))&&allCampaigns.some(c=>!hidden.has(c.id))&&<span style={{ width:7, height:2, background:"#818CF8", borderRadius:1, position:"absolute" }}/>}
+          <tr style={{ background:B.surface }}>
+            <th style={{ width:36, padding:"9px 0 9px 14px", borderBottom:`1px solid ${B.border}` }}>
+              <span onClick={toggleAll} style={{ width:13, height:13, borderRadius:2, border:`1.5px solid ${B.borderLight}`, background:allCampaigns.every(c=>!hidden.has(c.id))?B.hartyGreen:allCampaigns.some(c=>!hidden.has(c.id))?B.surface:"transparent", display:"inline-flex", alignItems:"center", justifyContent:"center", cursor:"pointer", position:"relative" }}>
+                {allCampaigns.every(c=>!hidden.has(c.id))&&<span style={{ color:B.deepBlack, fontSize:8, fontWeight:900 }}>✓</span>}
+                {!allCampaigns.every(c=>!hidden.has(c.id))&&allCampaigns.some(c=>!hidden.has(c.id))&&<span style={{ width:7, height:2, background:B.hartyGreen, borderRadius:1, position:"absolute" }}/>}
               </span>
             </th>
-            <th style={{ textAlign:"left", padding:"9px 14px", fontSize:9, fontFamily:"monospace", textTransform:"uppercase", letterSpacing:"0.1em", color:"#4A4F6A", borderBottom:"1px solid #1E2140" }}>Campaign</th>
+            <th style={{ ...thStyle, textAlign:"left", color:B.textMuted }}>Campaign</th>
             {metricKeys.map(k=>(
               <th key={k} onClick={()=>k===sortKey?setSortDir(d=>d==="desc"?"asc":"desc"):(setSortKey(k),setSortDir("desc"))}
-                style={{ textAlign:"right", padding:"9px 14px", fontSize:9, fontFamily:"monospace", textTransform:"uppercase", letterSpacing:"0.1em", color:sortKey===k?"#818CF8":"#4A4F6A", cursor:"pointer", borderBottom:"1px solid #1E2140", userSelect:"none", whiteSpace:"nowrap" }}>
+                style={{ ...thStyle, textAlign:"right", color:sortKey===k?B.hartyGreen:B.textMuted, cursor:"pointer", userSelect:"none", whiteSpace:"nowrap" }}>
                 {k}{sortKey===k?(sortDir==="desc"?" ↓":" ↑"):""}
               </th>
             ))}
@@ -404,34 +350,27 @@ function CampaignTable({ allCampaigns, visible, hidden, toggle, toggleAll, metri
           {rows.map(row=>{
             const isVisible = !hidden.has(row.id);
             return (
-              <tr key={row.id} style={{ borderBottom:"1px solid #1A1C34", opacity:isVisible?1:0.35, transition:"opacity 0.15s" }}
-                onMouseEnter={e=>e.currentTarget.style.background="#12142A"}
+              <tr key={row.id} style={{ borderBottom:`1px solid ${B.border}`, opacity:isVisible?1:0.3, transition:"opacity 0.15s" }}
+                onMouseEnter={e=>e.currentTarget.style.background=B.surface}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                {/* Checkbox cell */}
                 <td style={{ padding:"10px 0 10px 14px", verticalAlign:"middle" }}>
-                  <span onClick={()=>toggle(row.id)} style={{
-                    width:13, height:13, borderRadius:3, flexShrink:0,
-                    border:`1.5px solid ${isVisible?row.color:"#2E3152"}`,
-                    background: isVisible ? row.color : "transparent",
-                    display:"inline-flex", alignItems:"center", justifyContent:"center",
-                    cursor:"pointer", transition:"all 0.12s",
-                  }}>
-                    {isVisible && <span style={{ color:"#000", fontSize:8, fontWeight:900, lineHeight:1 }}>✓</span>}
+                  <span onClick={()=>toggle(row.id)} style={{ width:13, height:13, borderRadius:2, border:`1.5px solid ${isVisible?row.color:B.borderLight}`, background:isVisible?row.color:"transparent", display:"inline-flex", alignItems:"center", justifyContent:"center", cursor:"pointer", transition:"all 0.12s" }}>
+                    {isVisible&&<span style={{ color:B.deepBlack, fontSize:8, fontWeight:900, lineHeight:1 }}>✓</span>}
                   </span>
                 </td>
                 <td style={{ padding:"10px 14px", verticalAlign:"middle" }}>
                   <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    <div style={{ width:9, height:9, borderRadius:3, background:row.color, flexShrink:0 }}/>
-                    <span style={{ color:isVisible?"#E8EAF2":"#4A4F6A", fontWeight:500 }}>{row.name}</span>
+                    <div style={{ width:8, height:8, borderRadius:1, background:row.color, flexShrink:0 }}/>
+                    <span style={{ color:isVisible?B.textPrimary:B.textMuted, fontWeight:500, fontFamily:"'Barlow',sans-serif", fontSize:12 }}>{row.name}</span>
                   </div>
                 </td>
                 {metricKeys.map(k=>{
-                  const delta = row.prevSum ? pctDelta(row.currSum[k],row.prevSum[k]) : null;
+                  const delta = row.prevSum?pctDelta(row.currSum[k],row.prevSum[k]):null;
                   return (
-                    <td key={k} style={{ textAlign:"right", padding:"10px 14px", fontFamily:"monospace" }}>
-                      <span style={{ color:isVisible?row.color:"#3A3F5A" }}>{fmtCell(k,row.currSum[k])}</span>
-                      {delta!==null&&isVisible&&<span style={{ fontSize:9, color:delta>=0?"#22C55E":"#EF4444", marginLeft:5 }}>{delta>=0?"▲":"▼"}{Math.abs(delta).toFixed(0)}%</span>}
-                      {comparing&&row.prevSum&&isVisible&&<div style={{ fontSize:9, color:"#2E3152" }}>{fmtCell(k,row.prevSum[k])}</div>}
+                    <td key={k} style={{ textAlign:"right", padding:"10px 14px", fontFamily:"'Barlow Condensed',sans-serif" }}>
+                      <span style={{ color:isVisible?row.color:B.textMuted, fontSize:13, fontWeight:600 }}>{fmtCell(k,row.currSum[k])}</span>
+                      {delta!==null&&isVisible&&<span style={{ fontSize:9, color:delta>=0?B.positive:B.negative, marginLeft:5, fontWeight:600 }}>{delta>=0?"▲":"▼"}{Math.abs(delta).toFixed(0)}%</span>}
+                      {comparing&&row.prevSum&&isVisible&&<div style={{ fontSize:9, color:B.textMuted }}>{fmtCell(k,row.prevSum[k])}</div>}
                     </td>
                   );
                 })}
@@ -450,8 +389,7 @@ function Section({ campaignKey, title, accent, metricKeys, charts, tableFmt }) {
   const bp = useBreakpoint();
   const allCampaigns = CAMPAIGNS[campaignKey];
   const { hidden, toggle, toggleAll, visible } = useCampaignVisibility(allCampaigns);
-
-  const allCurr = allCampaigns.flatMap(c => slicePeriods(c.data,range,compareMode).curr);
+  const allCurr = allCampaigns.flatMap(c=>slicePeriods(c.data,range,compareMode).curr);
   const allPrev = compareMode&&compareMode!=="none" ? allCampaigns.flatMap(c=>slicePeriods(c.data,range,compareMode).prev||[]) : null;
   const tc = sumKeys(allCurr,metricKeys);
   const tp = allPrev ? sumKeys(allPrev,metricKeys) : {};
@@ -460,191 +398,143 @@ function Section({ campaignKey, title, accent, metricKeys, charts, tableFmt }) {
     <>
       <SectionHeader title={title} accent={accent}/>
       <CompareLabel compareMode={compareMode}/>
-
-      {/* Summary stats */}
-      <div style={{ display:"flex", gap: bp.isMobile ? 8 : 10, flexWrap:"wrap", marginBottom:16 }}>
-        {metricKeys.map(k=>(
-          <StatCard key={k} label={k} curr={tc[k]} prev={tp[k]} color={accent}
-            fmt={k==="spend"||k==="revenue"?fmtD:fmtK}/>
-        ))}
+      <div style={{ display:"flex", gap:bp.isMobile?6:10, flexWrap:"wrap", marginBottom:16 }}>
+        {metricKeys.map(k=>(<StatCard key={k} label={k} curr={tc[k]} prev={tp[k]} color={accent} fmt={k==="spend"||k==="revenue"?fmtD:fmtK}/>))}
       </div>
-
-      {/* Campaign filter bar */}
       <CampaignFilterBar campaigns={allCampaigns} hidden={hidden} toggle={toggle} toggleAll={toggleAll}/>
-
-      {/* Charts */}
-      {charts.map((chart, ci) => {
-        if (chart.type === "area") {
-          return (
-            <ChartCard key={ci} title={chart.title} accent={accent}>
-              <CampaignAreaChart campaigns={visible} dataKey={chart.dataKey} height={bp.isMobile ? 160 : chart.height||200} fmtVal={chart.fmtVal}/>
-            </ChartCard>
-          );
-        }
-        if (chart.type === "area-pair") {
-          return (
-            <div key={ci} style={{ display:"grid", gridTemplateColumns: bp.isMobile ? "1fr" : "1fr 1fr", gap:14 }}>
-              {chart.items.map((item,ii)=>(
-                <ChartCard key={ii} title={item.title} accent={accent}>
-                  <CampaignAreaChart campaigns={visible} dataKey={item.dataKey} height={bp.isMobile ? 150 : 160} fmtVal={item.fmtVal}/>
-                </ChartCard>
-              ))}
-            </div>
-          );
-        }
-        if (chart.type === "bar") {
-          return (
-            <ChartCard key={ci} title={chart.title} accent={accent}>
-              <CampaignBarChart campaigns={visible} dataKey={chart.dataKey} height={chart.height||160} fmtVal={chart.fmtVal}/>
-            </ChartCard>
-          );
-        }
+      {charts.map((chart,ci)=>{
+        if (chart.type==="area") return <ChartCard key={ci} title={chart.title} accent={accent}><CampaignAreaChart campaigns={visible} dataKey={chart.dataKey} height={bp.isMobile?150:chart.height||200} fmtVal={chart.fmtVal}/></ChartCard>;
+        if (chart.type==="area-pair") return (
+          <div key={ci} style={{ display:"grid", gridTemplateColumns:bp.isMobile?"1fr":"1fr 1fr", gap:14 }}>
+            {chart.items.map((item,ii)=>(<ChartCard key={ii} title={item.title} accent={accent}><CampaignAreaChart campaigns={visible} dataKey={item.dataKey} height={bp.isMobile?140:160} fmtVal={item.fmtVal}/></ChartCard>))}
+          </div>
+        );
+        if (chart.type==="bar") return <ChartCard key={ci} title={chart.title} accent={accent}><CampaignBarChart campaigns={visible} dataKey={chart.dataKey} height={chart.height||160} fmtVal={chart.fmtVal}/></ChartCard>;
         return null;
       })}
-
-      {/* Table */}
-      <CampaignTable
-        allCampaigns={allCampaigns} visible={visible}
-        hidden={hidden} toggle={toggle} toggleAll={toggleAll}
-        metricKeys={metricKeys} fmtCell={tableFmt}/>
+      <CampaignTable allCampaigns={allCampaigns} hidden={hidden} toggle={toggle} toggleAll={toggleAll} metricKeys={metricKeys} fmtCell={tableFmt}/>
     </>
   );
 }
 
 // ─── SECTION CONFIGS ─────────────────────────────────────────────────────────
 const SECTIONS = {
-  gp: {
-    campaignKey:"googlePaid", title:"Google Ads — Paid", accent:"#EA4335",
+  googlePaid: {
+    campaignKey:"googlePaid", title:"Google Ads — Paid Search", accent:B.hartyGreen,
     metricKeys:["impressions","clicks","spend","conversions"],
     tableFmt:(k,v)=>k==="spend"?`$${v.toLocaleString()}`:v.toLocaleString(),
     charts:[
-      { type:"area",      title:"Impressions by Campaign",       dataKey:"impressions" },
-      { type:"area-pair", items:[
-        { title:"Spend by Campaign",       dataKey:"spend",       fmtVal:(_,v)=>`$${v}` },
-        { title:"Conversions by Campaign", dataKey:"conversions"  },
-      ]},
-      { type:"bar",  title:"Campaign Totals — Clicks", dataKey:"clicks" },
+      { type:"area", title:"Impressions over Time", dataKey:"impressions" },
+      { type:"area-pair", items:[{ title:"Spend", dataKey:"spend", fmtVal:(_,v)=>`$${v}` },{ title:"Conversions", dataKey:"conversions" }]},
+      { type:"bar", title:"Total Clicks by Campaign", dataKey:"clicks" },
     ],
   },
-  go: {
-    campaignKey:"googleOrganic", title:"Google Search — Organic", accent:"#34A853",
+  googleOrganic: {
+    campaignKey:"googleOrganic", title:"Google Search — Organic", accent:"#6BA82E",
     metricKeys:["impressions","clicks","sessions","conversions"],
     tableFmt:(_,v)=>v.toLocaleString(),
     charts:[
-      { type:"area",      title:"Clicks by Content Type",         dataKey:"clicks" },
-      { type:"area-pair", items:[
-        { title:"Sessions by Content Type",     dataKey:"sessions"     },
-        { title:"Conversions by Content Type",  dataKey:"conversions"  },
-      ]},
-      { type:"bar",  title:"Impressions — Content Type Totals", dataKey:"impressions" },
+      { type:"area", title:"Clicks over Time", dataKey:"clicks" },
+      { type:"area-pair", items:[{ title:"Sessions", dataKey:"sessions" },{ title:"Conversions", dataKey:"conversions" }]},
+      { type:"bar", title:"Total Impressions by Content Type", dataKey:"impressions" },
     ],
   },
-  ga4: {
-    campaignKey:"ga4", title:"Google Analytics 4 — by Channel", accent:"#F9AB00",
+  analytics: {
+    campaignKey:"ga4", title:"Google Analytics 4 — Channels", accent:B.raptorYellow,
     metricKeys:["sessions","users","pageviews","conversions","revenue"],
     tableFmt:(k,v)=>k==="revenue"?`$${v.toLocaleString()}`:v.toLocaleString(),
     charts:[
-      { type:"area",      title:"Sessions by Channel",     dataKey:"sessions"     },
-      { type:"area-pair", items:[
-        { title:"Revenue by Channel",     dataKey:"revenue",     fmtVal:(_,v)=>`$${v}` },
-        { title:"Conversions by Channel", dataKey:"conversions"  },
-      ]},
-      { type:"bar",  title:"Pageviews — Channel Totals", dataKey:"pageviews" },
+      { type:"area", title:"Sessions over Time", dataKey:"sessions" },
+      { type:"area-pair", items:[{ title:"Revenue", dataKey:"revenue", fmtVal:(_,v)=>`$${v}` },{ title:"Conversions", dataKey:"conversions" }]},
+      { type:"bar", title:"Total Pageviews by Channel", dataKey:"pageviews" },
     ],
   },
-  fb: {
-    campaignKey:"facebook", title:"Facebook — Campaigns", accent:"#1877F2",
+  facebook: {
+    campaignKey:"facebook", title:"Facebook — Campaigns", accent:"#6BA82E",
     metricKeys:["impressions","clicks","spend","conversions"],
     tableFmt:(k,v)=>k==="spend"?`$${v.toLocaleString()}`:v.toLocaleString(),
     charts:[
-      { type:"area",      title:"Impressions by Campaign",  dataKey:"impressions" },
-      { type:"area-pair", items:[
-        { title:"Spend by Campaign",  dataKey:"spend",  fmtVal:(_,v)=>`$${v}` },
-        { title:"Clicks by Campaign", dataKey:"clicks" },
-      ]},
-      { type:"bar",  title:"Campaign Totals — Conversions", dataKey:"conversions" },
+      { type:"area", title:"Impressions over Time", dataKey:"impressions" },
+      { type:"area-pair", items:[{ title:"Spend", dataKey:"spend", fmtVal:(_,v)=>`$${v}` },{ title:"Clicks", dataKey:"clicks" }]},
+      { type:"bar", title:"Total Conversions by Campaign", dataKey:"conversions" },
     ],
   },
-  ig: {
-    campaignKey:"instagram", title:"Instagram — Campaigns", accent:"#E1306C",
+  instagram: {
+    campaignKey:"instagram", title:"Instagram — Campaigns", accent:B.spyderGreen,
     metricKeys:["impressions","clicks","spend","conversions"],
     tableFmt:(k,v)=>k==="spend"?`$${v.toLocaleString()}`:v.toLocaleString(),
     charts:[
-      { type:"area",      title:"Impressions by Campaign",  dataKey:"impressions" },
-      { type:"area-pair", items:[
-        { title:"Spend by Campaign",  dataKey:"spend",  fmtVal:(_,v)=>`$${v}` },
-        { title:"Clicks by Campaign", dataKey:"clicks" },
-      ]},
-      { type:"bar",  title:"Campaign Totals — Conversions", dataKey:"conversions" },
+      { type:"area", title:"Impressions over Time", dataKey:"impressions" },
+      { type:"area-pair", items:[{ title:"Spend", dataKey:"spend", fmtVal:(_,v)=>`$${v}` },{ title:"Clicks", dataKey:"clicks" }]},
+      { type:"bar", title:"Total Conversions by Campaign", dataKey:"conversions" },
     ],
   },
 };
 
 // ─── SEARCH TERMS ────────────────────────────────────────────────────────────
 function SearchTermsSection() {
-  const [sortKey, setSortKey]     = useState("searches");
-  const [sortDir, setSortDir]     = useState("desc");
+  const [sortKey, setSortKey] = useState("searches");
+  const [sortDir, setSortDir] = useState("desc");
   const [chartMetric, setChartMetric] = useState("searches");
   const sorted = [...TOP_SEARCH_TERMS].sort((a,b)=>sortDir==="desc"?b[sortKey]-a[sortKey]:a[sortKey]-b[sortKey]);
   const metricOpts = [
-    { key:"searches",       label:"Searches",      color:"#818CF8" },
-    { key:"paid_clicks",    label:"Paid Clicks",   color:"#EA4335" },
-    { key:"organic_clicks", label:"Organic",       color:"#34A853" },
-    { key:"cpc",            label:"CPC",           color:"#F9AB00" },
-    { key:"ctr",            label:"CTR %",         color:"#38BDF8" },
+    { key:"searches",       label:"Searches",    color:B.hartyGreen },
+    { key:"paid_clicks",    label:"Paid",        color:B.raptorYellow },
+    { key:"organic_clicks", label:"Organic",     color:"#6BA82E" },
+    { key:"cpc",            label:"CPC",         color:B.textSecond },
+    { key:"ctr",            label:"CTR",         color:B.spyderGreen },
   ];
   const am = metricOpts.find(m=>m.key===chartMetric);
-  const chartData = [...TOP_SEARCH_TERMS].sort((a,b)=>b[chartMetric]-a[chartMetric])
-    .map(t=>({ name:t.term.length>26?t.term.slice(0,26)+"…":t.term, value:t[chartMetric] }));
+  const chartData = [...TOP_SEARCH_TERMS].sort((a,b)=>b[chartMetric]-a[chartMetric]).map(t=>({ name:t.term.length>28?t.term.slice(0,28)+"…":t.term, value:t[chartMetric] }));
   const cols = ["term","searches","cpc","ctr","position","paid_clicks","organic_clicks","competition"];
   const fmtCell = (k,v) => k==="cpc"?`$${v.toFixed(2)}`:k==="ctr"?`${v}%`:k==="position"?v.toFixed(1):typeof v==="number"?v.toLocaleString():v;
 
   return (
     <>
-      <SectionHeader title="Top 10 Search Terms" accent="#818CF8"/>
-      <div style={{ background:"#12142A", borderRadius:16, padding:"18px 20px", border:"1px solid #818CF833", marginBottom:14 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16, flexWrap:"wrap", gap:8 }}>
-          <span style={{ fontSize:12, color:"#C8CADC", fontWeight:600 }}>Term Performance</span>
-          <div style={{ display:"flex", gap:3, background:"#0C0E1E", borderRadius:8, padding:3 }}>
+      <SectionHeader title="Top 10 Search Terms" accent={B.hartyGreen}/>
+      <div style={{ background:B.surface, borderRadius:6, padding:"16px 18px", border:`1px solid ${B.border}`, borderLeft:`3px solid ${B.hartyGreen}`, marginBottom:14 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14, flexWrap:"wrap", gap:8 }}>
+          <span style={{ fontSize:11, color:B.textSecond, fontWeight:600, fontFamily:"'Barlow Condensed',sans-serif", textTransform:"uppercase", letterSpacing:"0.1em" }}>Term Performance</span>
+          <div style={{ display:"flex", gap:3, background:B.bg, borderRadius:5, padding:3, border:`1px solid ${B.border}` }}>
             {metricOpts.map(m=>(
-              <button key={m.key} onClick={()=>setChartMetric(m.key)} style={{ padding:"4px 11px", borderRadius:6, border:"none", cursor:"pointer", fontSize:10, fontFamily:"'IBM Plex Mono',monospace", background:chartMetric===m.key?m.color:"transparent", color:chartMetric===m.key?"#0C0E1E":"#4A4F6A", fontWeight:chartMetric===m.key?700:400, transition:"all 0.15s" }}>{m.label}</button>
+              <button key={m.key} onClick={()=>setChartMetric(m.key)} style={{ padding:"4px 10px", borderRadius:4, border:"none", cursor:"pointer", fontSize:10, fontFamily:"'Barlow Condensed',sans-serif", background:chartMetric===m.key?m.color:"transparent", color:chartMetric===m.key?B.deepBlack:B.textMuted, fontWeight:700, transition:"all 0.15s", letterSpacing:"0.06em" }}>{m.label}</button>
             ))}
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={230}>
+        <ResponsiveContainer width="100%" height={240}>
           <BarChart data={chartData} layout="vertical" margin={{ left:0, right:30 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E2140" horizontal={false}/>
-            <XAxis type="number" tick={{ fill:"#4A4F6A", fontSize:9, fontFamily:"monospace" }} tickLine={false} axisLine={false} tickFormatter={v=>chartMetric==="cpc"?`$${v}`:chartMetric==="ctr"?`${v}%`:fmtK(v)}/>
-            <YAxis type="category" dataKey="name" tick={{ fill:"#C8CADC", fontSize:10, fontFamily:"monospace" }} tickLine={false} axisLine={false} width={178}/>
+            <CartesianGrid strokeDasharray="3 3" stroke={B.border} horizontal={false}/>
+            <XAxis type="number" tick={{ fill:B.textMuted, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} axisLine={false} tickFormatter={v=>chartMetric==="cpc"?`$${v}`:chartMetric==="ctr"?`${v}%`:fmtK(v)}/>
+            <YAxis type="category" dataKey="name" tick={{ fill:B.textSecond, fontSize:9, fontFamily:"'Barlow',sans-serif" }} tickLine={false} axisLine={false} width={185}/>
             <Tooltip content={<ChartTooltip fmtVal={(_,v)=>chartMetric==="cpc"?`$${v.toFixed(2)}`:chartMetric==="ctr"?`${v}%`:v.toLocaleString()}/>}/>
-            <Bar dataKey="value" fill={am.color} radius={[0,4,4,0]} opacity={0.9}/>
+            <Bar dataKey="value" fill={am.color} radius={[0,3,3,0]} opacity={0.9}/>
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div style={{ background:"#12142A", borderRadius:16, border:"1px solid #1E2140", overflow:"hidden" }}>
+      <div style={{ background:B.surface, borderRadius:6, border:`1px solid ${B.border}`, overflow:"hidden" }}>
         <div style={{ overflowX:"auto" }}>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
             <thead>
-              <tr style={{ background:"#0C0E1E" }}>
+              <tr style={{ background:B.bg }}>
                 {cols.map(c=>(
                   <th key={c} onClick={()=>c!=="term"&&c!=="competition"&&(c===sortKey?setSortDir(d=>d==="desc"?"asc":"desc"):(setSortKey(c),setSortDir("desc")))}
-                    style={{ textAlign:"left", padding:"10px 14px", fontSize:9, fontFamily:"monospace", textTransform:"uppercase", letterSpacing:"0.1em", color:sortKey===c?"#818CF8":"#4A4F6A", cursor:c!=="term"&&c!=="competition"?"pointer":"default", borderBottom:"1px solid #1E2140", userSelect:"none", whiteSpace:"nowrap" }}>
-                    {c.replace("_"," ")}{sortKey===c?(sortDir==="desc"?" ↓":" ↑"):""}
+                    style={{ textAlign:"left", padding:"10px 14px", fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", textTransform:"uppercase", letterSpacing:"0.12em", color:sortKey===c?B.hartyGreen:B.textMuted, cursor:c!=="term"&&c!=="competition"?"pointer":"default", borderBottom:`1px solid ${B.border}`, userSelect:"none", whiteSpace:"nowrap", fontWeight:600 }}>
+                    {c.replace(/_/g," ")}{sortKey===c?(sortDir==="desc"?" ↓":" ↑"):""}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {sorted.map((row,i)=>(
-                <tr key={row.term} style={{ borderBottom:"1px solid #1A1C34" }}
-                  onMouseEnter={e=>e.currentTarget.style.background="#1A1C34"}
+                <tr key={row.term} style={{ borderBottom:`1px solid ${B.border}` }}
+                  onMouseEnter={e=>e.currentTarget.style.background=B.surface}
                   onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                   {cols.map(c=>(
-                    <td key={c} style={{ padding:"10px 14px", color:"#C8CADC", verticalAlign:"middle" }}>
-                      {c==="term"?(<div style={{ display:"flex", alignItems:"center", gap:8 }}><span style={{ width:18, height:18, borderRadius:5, background:"#1E2140", color:"#4A4F6A", fontSize:9, fontFamily:"monospace", fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span><span style={{ fontWeight:500, color:"#E8EAF2" }}>{row.term}</span></div>)
-                      :c==="competition"?(<span style={{ fontSize:10, padding:"2px 9px", borderRadius:99, fontFamily:"monospace", fontWeight:700, background:`${COMP_COLORS[row.competition]}18`, color:COMP_COLORS[row.competition] }}>{row[c]}</span>)
-                      :c==="searches"?(<div style={{ display:"flex", alignItems:"center", gap:8 }}><div style={{ height:4, borderRadius:99, background:"#818CF8", width:`${Math.round((row.searches/18400)*50)}px`, minWidth:4 }}/><span style={{ fontFamily:"monospace" }}>{row.searches.toLocaleString()}</span></div>)
-                      :(<span style={{ fontFamily:"monospace", color:c==="cpc"?"#F9AB00":c==="paid_clicks"?"#EA4335":c==="organic_clicks"?"#34A853":c==="position"?(row.position<=3?"#22C55E":row.position<=6?"#F59E0B":"#EF4444"):"#C8CADC" }}>{fmtCell(c,row[c])}</span>)}
+                    <td key={c} style={{ padding:"10px 14px", color:B.textSecond, verticalAlign:"middle" }}>
+                      {c==="term"?(<div style={{ display:"flex", alignItems:"center", gap:8 }}><span style={{ width:18, height:18, borderRadius:3, background:B.surface, border:`1px solid ${B.border}`, color:B.textMuted, fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span><span style={{ fontWeight:500, color:B.textPrimary, fontFamily:"'Barlow',sans-serif" }}>{row.term}</span></div>)
+                      :c==="competition"?(<span style={{ fontSize:10, padding:"2px 8px", borderRadius:3, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, letterSpacing:"0.08em", background:`${COMP_COLORS[row.competition]}22`, color:COMP_COLORS[row.competition] }}>{row[c].toUpperCase()}</span>)
+                      :c==="searches"?(<div style={{ display:"flex", alignItems:"center", gap:8 }}><div style={{ height:3, borderRadius:99, background:B.hartyGreen, width:`${Math.round((row.searches/18400)*48)}px`, minWidth:3 }}/><span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600 }}>{row.searches.toLocaleString()}</span></div>)
+                      :(<span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, color:c==="cpc"?B.raptorYellow:c==="paid_clicks"?B.hartyGreen:c==="organic_clicks"?"#6BA82E":c==="position"?(row.position<=3?B.positive:row.position<=6?B.raptorYellow:B.negative):B.textSecond }}>{fmtCell(c,row[c])}</span>)}
                     </td>
                   ))}
                 </tr>
@@ -664,30 +554,19 @@ function CompareDropdown({ value, onChange, compact=false }) {
   const isActive = value && value !== "none";
   return (
     <div style={{ position:"relative" }}>
-      <button onClick={()=>setOpen(o=>!o)} style={{
-        display:"flex", alignItems:"center", gap:6, padding: compact ? "5px 10px" : "7px 14px",
-        borderRadius:8, border:`1px solid ${isActive?"#818CF8":"#1E2140"}`,
-        background:isActive?"#818CF822":"#12142A", cursor:"pointer",
-        fontSize: compact ? 10 : 11, fontFamily:"'IBM Plex Mono',monospace",
-        color:isActive?"#818CF8":"#4A4F6A", transition:"all 0.15s", whiteSpace:"nowrap"
-      }}>
-        <span style={{ fontSize:12 }}>⇄</span>
-        {!compact && (isActive ? current.label : "Compare to…")}
-        {compact && <span style={{ fontSize:9 }}>{isActive ? "On" : "Cmp"}</span>}
+      <button onClick={()=>setOpen(o=>!o)} style={{ display:"flex", alignItems:"center", gap:6, padding:compact?"5px 10px":"7px 14px", borderRadius:4, border:`1px solid ${isActive?B.hartyGreen:B.border}`, background:isActive?B.hartyGreen+"22":B.surface, cursor:"pointer", fontSize:compact?9:11, fontFamily:"'Barlow Condensed',sans-serif", color:isActive?B.hartyGreen:B.textSecond, transition:"all 0.15s", whiteSpace:"nowrap", letterSpacing:"0.06em", fontWeight:600 }}>
+        <span>⇄</span>
+        {!compact && (isActive?current.label.toUpperCase():"COMPARE TO…")}
+        {compact && <span>{isActive?"ON":"CMP"}</span>}
         <span style={{ fontSize:9, opacity:0.6 }}>{open?"▲":"▼"}</span>
       </button>
       {open&&(
-        <div style={{ position:"absolute", top:"calc(100% + 6px)", right:0, background:"#1A1C34", border:"1px solid #2E3152", borderRadius:10, overflow:"hidden", zIndex:200, minWidth:190, boxShadow:"0 8px 32px rgba(0,0,0,0.5)" }}>
+        <div style={{ position:"absolute", top:"calc(100% + 6px)", right:0, background:B.surfaceHigh, border:`1px solid ${B.borderLight}`, borderRadius:6, overflow:"hidden", zIndex:200, minWidth:190, boxShadow:"0 8px 32px rgba(0,0,0,0.6)" }}>
           {COMPARE_OPTS.map(opt=>(
-            <button key={opt.value} onClick={()=>{ onChange(opt.value); setOpen(false); }} style={{
-              display:"block", width:"100%", textAlign:"left", padding:"10px 16px",
-              border:"none", cursor:"pointer", fontSize:11, fontFamily:"'IBM Plex Mono',monospace",
-              background:value===opt.value?"#2E3152":"transparent",
-              color:value===opt.value?"#818CF8":"#C8CADC", transition:"background 0.1s"
-            }}
-              onMouseEnter={e=>e.currentTarget.style.background="#252742"}
-              onMouseLeave={e=>e.currentTarget.style.background=value===opt.value?"#2E3152":"transparent"}>
-              {opt.value==="none"?<span style={{ opacity:0.5 }}>{opt.label}</span>:opt.label}
+            <button key={opt.value} onClick={()=>{ onChange(opt.value); setOpen(false); }} style={{ display:"block", width:"100%", textAlign:"left", padding:"10px 16px", border:"none", cursor:"pointer", fontSize:11, fontFamily:"'Barlow Condensed',sans-serif", background:value===opt.value?B.hartyGreen+"22":"transparent", color:value===opt.value?B.hartyGreen:B.textSecond, transition:"background 0.1s", letterSpacing:"0.05em", fontWeight:600 }}
+              onMouseEnter={e=>e.currentTarget.style.background=B.border}
+              onMouseLeave={e=>e.currentTarget.style.background=value===opt.value?B.hartyGreen+"22":"transparent"}>
+              {opt.value==="none"?<span style={{ opacity:0.5 }}>{opt.label.toUpperCase()}</span>:opt.label.toUpperCase()}
             </button>
           ))}
         </div>
@@ -696,77 +575,105 @@ function CompareDropdown({ value, onChange, compact=false }) {
   );
 }
 
-// ─── NAV ─────────────────────────────────────────────────────────────────────
+// ─── GOOGLE TAB — sub-nav ─────────────────────────────────────────────────────
+const GOOGLE_SUBS = [
+  { id:"googlePaid",    label:"Paid Search",  accent:B.hartyGreen  },
+  { id:"googleOrganic", label:"Organic",      accent:"#6BA82E"     },
+  { id:"analytics",     label:"Analytics",    accent:B.raptorYellow },
+];
+
+function GoogleTab() {
+  const [sub, setSub] = useState("googlePaid");
+  const bp = useBreakpoint();
+  const activeSub = GOOGLE_SUBS.find(s=>s.id===sub);
+
+  return (
+    <>
+      {/* Sub-nav */}
+      <div style={{ display:"flex", gap:0, marginBottom:24, borderBottom:`1px solid ${B.border}` }}>
+        {GOOGLE_SUBS.map(s=>(
+          <button key={s.id} onClick={()=>setSub(s.id)} style={{ padding:bp.isMobile?"8px 14px":"10px 20px", border:"none", cursor:"pointer", background:"transparent", fontSize:bp.isMobile?11:12, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, letterSpacing:"0.08em", color:sub===s.id?s.accent:B.textMuted, borderBottom:sub===s.id?`2px solid ${s.accent}`:"2px solid transparent", marginBottom:-1, whiteSpace:"nowrap", transition:"all 0.15s", textTransform:"uppercase" }}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Section content */}
+      {sub !== "analytics" && <Section {...SECTIONS[sub]}/>}
+      {sub === "analytics" && (
+        <>
+          <Section {...SECTIONS.analytics}/>
+          {/* Divider */}
+          <div style={{ height:1, background:B.border, margin:"32px 0 28px" }}/>
+          <SearchTermsSection/>
+        </>
+      )}
+    </>
+  );
+}
+
+// ─── TOP-LEVEL NAV ────────────────────────────────────────────────────────────
 const NAV = [
-  { id:"gp",  label:"Google Paid",    accent:"#EA4335" },
-  { id:"go",  label:"Google Organic", accent:"#34A853" },
-  { id:"ga4", label:"Analytics",      accent:"#F9AB00" },
-  { id:"fb",  label:"Facebook",       accent:"#1877F2" },
-  { id:"ig",  label:"Instagram",      accent:"#E1306C" },
-  { id:"st",  label:"Search Terms",   accent:"#818CF8" },
+  { id:"google",    label:"Google",    accent:B.hartyGreen  },
+  { id:"facebook",  label:"Facebook",  accent:"#6BA82E"     },
+  { id:"instagram", label:"Instagram", accent:B.spyderGreen },
 ];
 
 // ─── APP ─────────────────────────────────────────────────────────────────────
 export default function App() {
   const [range, setRange]             = useState("30d");
   const [compareMode, setCompareMode] = useState("none");
-  const [activeTab, setActiveTab]     = useState("gp");
+  const [activeTab, setActiveTab]     = useState("google");
   const bp = useBreakpoint();
 
   return (
     <DashContext.Provider value={{ range, compareMode }}>
-      <div style={{ minHeight:"100vh", background:"#0C0E1E", fontFamily:"'DM Sans',sans-serif" }}>
+      <div style={{ minHeight:"100vh", background:B.bg, fontFamily:"'Barlow',sans-serif" }}>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
           * { box-sizing:border-box; margin:0; padding:0; }
           ::-webkit-scrollbar { height:4px; width:4px; }
-          ::-webkit-scrollbar-track { background:#0C0E1E; }
-          ::-webkit-scrollbar-thumb { background:#2E3152; border-radius:99px; }
+          ::-webkit-scrollbar-track { background:${B.bg}; }
+          ::-webkit-scrollbar-thumb { background:${B.borderLight}; border-radius:2px; }
         `}</style>
 
         {/* ── TOP BAR ── */}
-        <div style={{ background:"#080A18", borderBottom:"1px solid #1E2140", position:"sticky", top:0, zIndex:100 }}>
-          <div style={{ maxWidth:"100%", margin:"0 auto", padding: bp.isMobile ? "0 14px" : "0 28px" }}>
+        <div style={{ background:B.deepBlack, borderBottom:`2px solid ${B.hartyGreen}`, position:"sticky", top:0, zIndex:100 }}>
+          <div style={{ padding:bp.isMobile?"0 14px":"0 28px" }}>
             {/* Row 1: wordmark + controls */}
-            <div style={{
-              display:"flex", alignItems:"center", justifyContent:"space-between",
-              padding: bp.isMobile ? "10px 0 8px" : "14px 0 12px",
-              borderBottom:"1px solid #1A1C30", flexWrap:"wrap", gap:8
-            }}>
-              <div style={{ fontSize: bp.isMobile ? 12 : 14, fontWeight:800, color:"#E8EAF2", fontFamily:"'IBM Plex Mono',monospace", letterSpacing:"-0.02em" }}>
-                Metric Tracker
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:bp.isMobile?"10px 0 8px":"14px 0 12px", borderBottom:`1px solid ${B.border}`, flexWrap:"wrap", gap:8 }}>
+
+              {/* Wordmark */}
+              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                {/* K-Hart logo mark — simplified SVG inline */}
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                  <rect width="28" height="28" rx="3" fill={B.hartyGreen}/>
+                  <path d="M6 7h3v5.5l5-5.5h4l-5.5 6 6 8h-4l-4.5-6.5V21H6V7z" fill={B.deepBlack}/>
+                  <rect x="16" y="12" width="6" height="2" rx="1" fill={B.deepBlack}/>
+                </svg>
+                <div>
+                  <div style={{ fontSize:bp.isMobile?13:15, fontWeight:700, color:B.textPrimary, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.06em", lineHeight:1.1 }}>K-HART INDUSTRIES</div>
+                  <div style={{ fontSize:8, color:B.hartyGreen, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.18em", fontWeight:600 }}>MARKETING DASHBOARD</div>
+                </div>
               </div>
+
+              {/* Controls */}
               <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                {/* Range pills */}
-                <div style={{ display:"flex", gap:3, background:"#12142A", padding:3, borderRadius:9, border:"1px solid #1E2140" }}>
+                <div style={{ display:"flex", gap:2, background:B.surface, padding:3, borderRadius:4, border:`1px solid ${B.border}` }}>
                   {RANGE_OPTS.map(r=>(
-                    <button key={r} onClick={()=>setRange(r)} style={{
-                      padding: bp.isMobile ? "4px 10px" : "5px 14px",
-                      borderRadius:6, border:"none", cursor:"pointer",
-                      fontSize: bp.isMobile ? 10 : 11, fontWeight:600,
-                      fontFamily:"'IBM Plex Mono',monospace",
-                      background:range===r?"#E8EAF2":"transparent",
-                      color:range===r?"#0C0E1E":"#4A4F6A", transition:"all 0.15s"
-                    }}>{r}</button>
+                    <button key={r} onClick={()=>setRange(r)} style={{ padding:bp.isMobile?"4px 10px":"5px 14px", borderRadius:3, border:"none", cursor:"pointer", fontSize:bp.isMobile?10:11, fontWeight:700, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", background:range===r?B.hartyGreen:"transparent", color:range===r?B.deepBlack:B.textMuted, transition:"all 0.15s" }}>{r}</button>
                   ))}
                 </div>
-                {!bp.isMobile && <div style={{ width:1, height:20, background:"#1E2140" }}/>}
+                {!bp.isMobile && <div style={{ width:1, height:20, background:B.border }}/>}
                 <CompareDropdown value={compareMode} onChange={setCompareMode} compact={bp.isMobile}/>
               </div>
             </div>
+
             {/* Row 2: nav tabs */}
             <div style={{ display:"flex", overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
               {NAV.map(item=>(
-                <button key={item.id} onClick={()=>setActiveTab(item.id)} style={{
-                  padding: bp.isMobile ? "10px 12px" : "13px 18px",
-                  border:"none", cursor:"pointer", background:"transparent",
-                  fontSize: bp.isMobile ? 10 : 11,
-                  fontFamily:"'IBM Plex Mono',monospace", fontWeight:600,
-                  color:activeTab===item.id?item.accent:"#4A4F6A",
-                  borderBottom:activeTab===item.id?`2px solid ${item.accent}`:"2px solid transparent",
-                  marginBottom:-1, whiteSpace:"nowrap", transition:"all 0.15s"
-                }}>
-                  {bp.isMobile ? item.label.split(" ")[0] : item.label}
+                <button key={item.id} onClick={()=>setActiveTab(item.id)} style={{ padding:bp.isMobile?"10px 14px":"12px 22px", border:"none", cursor:"pointer", background:"transparent", fontSize:bp.isMobile?11:12, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, letterSpacing:"0.1em", color:activeTab===item.id?item.accent:B.textMuted, borderBottom:activeTab===item.id?`2px solid ${item.accent}`:"2px solid transparent", marginBottom:-2, whiteSpace:"nowrap", transition:"all 0.15s", textTransform:"uppercase" }}>
+                  {item.label}
                 </button>
               ))}
             </div>
@@ -774,31 +681,28 @@ export default function App() {
         </div>
 
         {/* ── CONTENT ── */}
-        <div style={{ maxWidth:"100%", margin:"0 auto", padding: bp.isMobile ? "16px 14px" : "30px 28px" }}>
+        <div style={{ padding:bp.isMobile?"16px 14px":"28px 28px" }}>
 
-          {/* Summary bar — 2 cols mobile, 3 cols tablet, 5 cols desktop */}
-          <div style={{
-            display:"grid",
-            gridTemplateColumns: bp.isMobile ? "1fr 1fr" : bp.isTablet ? "repeat(3,1fr)" : "repeat(5,1fr)",
-            gap: bp.isMobile ? 8 : 12,
-            marginBottom: bp.isMobile ? 20 : 32
-          }}>
+          {/* Summary bar */}
+          <div style={{ display:"grid", gridTemplateColumns:bp.isMobile?"1fr 1fr":bp.isTablet?"repeat(3,1fr)":"repeat(5,1fr)", gap:bp.isMobile?8:12, marginBottom:bp.isMobile?20:28 }}>
             {[
-              { label:"Total Spend",       value:"$18,260", color:"#818CF8" },
-              { label:"Total Impressions", value:"2.95M",   color:"#38BDF8" },
-              { label:"Total Conversions", value:"1,893",   color:"#34D399" },
-              { label:"Blended ROAS",      value:"5.4×",    color:"#F472B6" },
-              { label:"Organic Sessions",  value:"17.6K",   color:"#34A853" },
+              { label:"Total Spend",       value:"$18,260", color:B.hartyGreen  },
+              { label:"Total Impressions", value:"2.95M",   color:"#6BA82E"     },
+              { label:"Total Conversions", value:"1,893",   color:B.raptorYellow},
+              { label:"Blended ROAS",      value:"5.4×",    color:B.hartyGreen  },
+              { label:"Organic Sessions",  value:"17.6K",   color:B.spyderGreen },
             ].map(s=>(
-              <div key={s.label} style={{ background:"#12142A", borderRadius:12, padding: bp.isMobile ? "10px 12px" : "14px 18px", border:"1px solid #1E2140" }}>
-                <div style={{ fontSize:8, fontFamily:"'IBM Plex Mono',monospace", color:"#4A4F6A", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>{s.label}</div>
-                <div style={{ fontSize: bp.isMobile ? 16 : 20, fontWeight:800, color:s.color, fontFamily:"'IBM Plex Mono',monospace" }}>{s.value}</div>
+              <div key={s.label} style={{ background:B.surface, borderRadius:6, padding:bp.isMobile?"10px 12px":"14px 18px", border:`1px solid ${B.border}`, borderTop:`3px solid ${s.color}` }}>
+                <div style={{ fontSize:8, fontFamily:"'Barlow Condensed',sans-serif", color:B.textMuted, textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:5, fontWeight:600 }}>{s.label}</div>
+                <div style={{ fontSize:bp.isMobile?17:22, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-0.01em" }}>{s.value}</div>
               </div>
             ))}
           </div>
 
-          {activeTab!=="st" && SECTIONS[activeTab] && <Section {...SECTIONS[activeTab]}/>}
-          {activeTab==="st" && <SearchTermsSection/>}
+          {/* Tab content */}
+          {activeTab === "google"    && <GoogleTab/>}
+          {activeTab === "facebook"  && <Section {...SECTIONS.facebook}/>}
+          {activeTab === "instagram" && <Section {...SECTIONS.instagram}/>}
         </div>
       </div>
     </DashContext.Provider>
