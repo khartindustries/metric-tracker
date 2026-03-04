@@ -1,0 +1,10 @@
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+Save it, then push it to GitHub:
+```
+git add .
+git commit -m "Add vercel config"
+git push
