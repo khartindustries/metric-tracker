@@ -1280,6 +1280,7 @@ function useMetaData() {
   const { startDate, endDate } = useDash();
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(false);
+  const lastCampaigns         = React.useRef([]);
 
   useEffect(() => {
     setLoading(true);
@@ -1321,10 +1322,28 @@ function useMetaData() {
         Object.values(byCampaign).forEach(arr => arr.sort((a,b)=>a.date.localeCompare(b.date)));
 
         const colors = ['#6BA82E','#5A9028','#48782C','#366820','#245814','#7E9A50'];
-        const campaignList = Object.entries(byCampaign).map(([name,data],i) => ({
+        let campaignList = Object.entries(byCampaign).map(([name,data],i) => ({
           id:`meta_${i}`, color:colors[i%colors.length],
           name:name.length>32?name.slice(0,32)+'…':name, data,
         }));
+
+        // If no campaigns returned, reuse last known campaigns with zeroed data
+        if (!campaignList.length && lastCampaigns.current.length) {
+          const n = Math.max(1, Math.round((new Date(endDate) - new Date(startDate)) / 86400000) + 1);
+          campaignList = lastCampaigns.current.map(c => ({
+            ...c,
+            data: Array.from({ length: n }, (_, i) => {
+              const d = new Date(startDate); d.setDate(d.getDate() + i);
+              return {
+                date: `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`,
+                impressions:0, reach:0, spend:0, linkClicks:0,
+                shares:0, comments:0, saves:0, reactions:0, leads:0,
+              };
+            }),
+          }));
+        } else if (campaignList.length) {
+          lastCampaigns.current = campaignList;
+        }
 
         // ── Platform breakdown totals (for breakdown table) ──
         const byPlatform = {};
@@ -1341,7 +1360,6 @@ function useMetaData() {
           m.shares+=row.shares;           m.saves+=row.saves;
           m.leads+=row.leads;
         });
-        // Round spend
         Object.values(byPlatform).forEach(p => { p.spend = Math.round(p.spend*100)/100; });
 
         setData({ campaigns: campaignList, byPlatform: Object.values(byPlatform) });
@@ -1664,14 +1682,7 @@ function MetaPaidTab() {
   const campaigns = data?.campaigns;
 
   if (loading) return <Spinner accent={accent} label="META PAID"/>;
-  if (!campaigns?.length) return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-      padding:"60px 20px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif",
-      fontSize:13, letterSpacing:"0.1em", textTransform:"uppercase", gap:12 }}>
-      <div style={{ fontSize:28, opacity:0.3 }}>◈</div>
-      <div>No paid campaign data for this period</div>
-    </div>
-  );
+  if (!campaigns?.length) return null;
 
   return (
     <>
