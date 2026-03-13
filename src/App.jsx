@@ -1383,7 +1383,7 @@ function usePageData() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/api/meta/page?start=${startDate}&end=${endDate}`)
+    fetch(`${API_BASE}/api/meta-page?start=${startDate}&end=${endDate}`)
       .then(r => r.json())
       .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false); })
       .catch(() => setLoading(false));
@@ -1571,7 +1571,7 @@ function useInstagramData() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/api/meta/instagram?start=${startDate}&end=${endDate}`)
+    fetch(`${API_BASE}/api/meta-instagram?start=${startDate}&end=${endDate}`)
       .then(r => r.json())
       .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false); })
       .catch(() => setLoading(false));
