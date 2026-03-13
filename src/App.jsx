@@ -1458,6 +1458,7 @@ function OrganicFacebookSection() {
     color: accent,
     data: data.map(r => ({
       date:        `${r.date.slice(5,7)}/${r.date.slice(8,10)}`,
+      isoDate:     r.date,
       reach:       r.reach,
       engagements: r.engagements,
     })),
@@ -1476,10 +1477,7 @@ function OrganicFacebookSection() {
 
   return (
     <>
-      <SectionHeader title="Facebook — Organic Page Insights" accent={accent}/>
-
-      {/* Stat cards */}
-      <div style={{ display:"flex", gap:bp.isMobile?6:10, flexWrap:"wrap", marginBottom:16 }}>
+      <div style={{ display:"flex", gap:bp.isMobile?6:10, flexWrap:"wrap", marginBottom:4 }}>
         {metricKeys.map(k => (
           <div key={k} style={{ background:B.surface, borderRadius:6, padding:"10px 14px",
             border:`1px solid ${B.border}`, flex:"1 1 110px", borderTop:`3px solid ${accent}` }}>
@@ -1494,17 +1492,6 @@ function OrganicFacebookSection() {
           </div>
         ))}
       </div>
-
-      {/* Charts */}
-      <div style={{ display:"grid", gridTemplateColumns:bp.isMobile?"1fr":"1fr 1fr", gap:14, marginBottom:14 }}>
-        <ChartCard title="Reach over Time" accent={accent}>
-          <CampaignAreaChart campaigns={pageCampaign} dataKey="reach" height={160}/>
-        </ChartCard>
-        <ChartCard title="Engagements over Time" accent={accent}>
-          <CampaignAreaChart campaigns={pageCampaign} dataKey="engagements" height={160}/>
-        </ChartCard>
-      </div>
-
     </>
   );
 }
@@ -1595,6 +1582,7 @@ function InstagramOrganicSection() {
     id:"ig_page", name:"Instagram Account", color:accent,
     data: data.map(r => ({
       date:         `${r.date.slice(5,7)}/${r.date.slice(8,10)}`,
+      isoDate:      r.date,
       reach:        r.reach,
       profileViews: r.profileViews,
       newFollowers: r.newFollowers,
@@ -1640,38 +1628,6 @@ function InstagramOrganicSection() {
         <ChartCard title="New Followers over Time" accent={accent}>
           <CampaignAreaChart campaigns={igCampaign} dataKey="newFollowers" height={160}/>
         </ChartCard>
-      </div>
-      <ChartCard title="New Followers over Time" accent={accent}>
-        <CampaignAreaChart campaigns={igCampaign} dataKey="newFollowers" height={150}/>
-      </ChartCard>
-
-      {/* Daily table */}
-      <div style={{ background:B.bg, borderRadius:6, border:`1px solid ${B.border}`, overflow:"hidden", marginTop:4 }}>
-        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
-          <thead>
-            <tr style={{ background:B.surface }}>
-              <th style={{ ...thStyle, textAlign:"left" }}>Date</th>
-              {metricKeys.map(k => <th key={k} style={{ ...thStyle, textAlign:"right" }}>{IG_LABELS[k]}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...data].reverse().map(row => (
-              <tr key={row.date} style={{ borderBottom:`1px solid ${B.border}` }}
-                onMouseEnter={e=>e.currentTarget.style.background=B.surface}
-                onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                <td style={{ padding:"9px 14px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, fontWeight:600 }}>
-                  {`${row.date.slice(5,7)}/${row.date.slice(8,10)}/${row.date.slice(0,4)}`}
-                </td>
-                {metricKeys.map(k => (
-                  <td key={k} style={{ padding:"9px 14px", textAlign:"right",
-                    fontFamily:"'Barlow Condensed',sans-serif", color:B.textSecond, fontWeight:600 }}>
-                    {(row[k]||0).toLocaleString()}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </>
   );
