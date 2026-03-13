@@ -1599,14 +1599,6 @@ function InstagramOrganicSection() {
 
   return (
     <>
-      <SectionHeader title="Instagram — Organic" accent={accent}/>
-
-      <div style={{ background:B.surface, border:`1px solid ${B.border}`, borderLeft:`3px solid ${accent}`,
-        borderRadius:6, padding:"10px 16px", marginBottom:16, fontSize:11,
-        fontFamily:"'Barlow Condensed',sans-serif", color:B.textSecond, letterSpacing:"0.04em" }}>
-        📊 Data sourced from <strong style={{ color:B.textPrimary }}>Instagram Account Insights</strong> — organic reach, impressions, profile visits, and follower growth.
-      </div>
-
       <div style={{ display:"flex", gap:bp.isMobile?6:10, flexWrap:"wrap", marginBottom:16 }}>
         {metricKeys.map(k => (
           <div key={k} style={{ background:B.surface, borderRadius:6, padding:"10px 14px",
@@ -1651,7 +1643,7 @@ function MetaTab() {
   );
   return (
     <div>
-      {sectionHeader("Meta — Paid", "#95C93D")}
+      {sectionHeader("Facebook — Paid", "#95C93D")}
       <MetaPaidTab/>
       {sectionHeader("Instagram — Organic", B.spyderGreen)}
       <InstagramOrganicSection/>
