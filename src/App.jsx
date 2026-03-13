@@ -1643,7 +1643,6 @@ function MetaTab() {
   );
   return (
     <div>
-      {sectionHeader("Facebook — Paid", "#95C93D")}
       <MetaPaidTab/>
       {sectionHeader("Instagram — Organic", B.spyderGreen)}
       <InstagramOrganicSection/>
@@ -1658,14 +1657,6 @@ function MetaPaidTab() {
   const campaigns = data?.campaigns;
 
   if (loading || data === null) return <Spinner accent={accent} label="META PAID"/>;
-  if (!campaigns?.length) return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-      padding:"60px 20px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif",
-      fontSize:13, letterSpacing:"0.1em", textTransform:"uppercase", gap:12 }}>
-      <div style={{ fontSize:28, opacity:0.3 }}>◈</div>
-      <div>No paid campaign data found</div>
-    </div>
-  );
   if (!campaigns?.length) return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
       padding:"60px 20px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif",
