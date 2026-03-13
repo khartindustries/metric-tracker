@@ -1599,7 +1599,7 @@ function InstagramOrganicSection() {
 
   return (
     <>
-      <SectionHeader title="Instagram — Organic Account Insights" accent={accent}/>
+      <SectionHeader title="Instagram — Organic" accent={accent}/>
 
       <div style={{ background:B.surface, border:`1px solid ${B.border}`, borderLeft:`3px solid ${accent}`,
         borderRadius:6, padding:"10px 16px", marginBottom:16, fontSize:11,
@@ -1653,8 +1653,6 @@ function MetaTab() {
     <div>
       {sectionHeader("Meta — Paid", "#95C93D")}
       <MetaPaidTab/>
-      {sectionHeader("Facebook", "#6BA82E")}
-      <OrganicFacebookSection/>
       {sectionHeader("Instagram — Organic", B.spyderGreen)}
       <InstagramOrganicSection/>
     </div>
