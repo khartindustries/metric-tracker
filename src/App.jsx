@@ -303,16 +303,31 @@ function CampaignAreaChart({ campaigns, dataKey, height=200, fmtVal }) {
   const comparing = compareMode && compareMode !== "none";
   const data = useMemo(() => {
     if (!campaigns.length) return [];
-    const base = Object.values(CAMPAIGNS).flat()[0].data.slice(-n);
-    return base.map((row,i) => {
-      const pt = { date: row.date };
-      campaigns.forEach(c => {
-        pt[`curr_${c.id}`] = c.data.slice(-n)[i]?.[dataKey]??0;
-        if (comparing) { const {prev}=slicePeriods(c.data,startDate,endDate,compareMode); pt[`prev_${c.id}`]=prev?.[i]?.[dataKey]??0; }
+
+    // Build full date scaffold using YYYY-MM-DD keys, timezone-safe
+    const scaffold = {};
+    const [sy, sm, sd] = startDate.split('-').map(Number);
+    const [ey, em, ed] = endDate.split('-').map(Number);
+    const start = new Date(sy, sm - 1, sd);
+    const end   = new Date(ey, em - 1, ed);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const isoKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const label  = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+      scaffold[isoKey] = { date: label };
+      campaigns.forEach(c => { scaffold[isoKey][`curr_${c.id}`] = 0; });
+    }
+
+    // Merge campaign data using isoDate for exact scaffold key matching
+    campaigns.forEach(c => {
+      c.data.forEach(row => {
+        if (row.isoDate && scaffold[row.isoDate]) {
+          scaffold[row.isoDate][`curr_${c.id}`] = row[dataKey] ?? 0;
+        }
       });
-      return pt;
     });
-  }, [campaigns, startDate, endDate, compareMode, dataKey, n]);
+
+    return Object.values(scaffold);
+  }, [campaigns, startDate, endDate, compareMode, dataKey]);
 
   if (!campaigns.length) return <div style={{ height, display:"flex", alignItems:"center", justifyContent:"center", color:B.textMuted, fontSize:11, fontFamily:"'Barlow',sans-serif" }}>No campaigns selected</div>;
 
@@ -1280,14 +1295,14 @@ function useMetaData() {
   const { startDate, endDate } = useDash();
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(false);
-  const lastCampaigns         = React.useRef([]);
 
   useEffect(() => {
     setLoading(true);
     fetch(`${API_BASE}/api/meta?start=${startDate}&end=${endDate}`)
       .then(r => r.json())
       .then(rows => {
-        if (!Array.isArray(rows)) { setLoading(false); return; }
+        console.log('Meta rows:', rows);
+        if (!Array.isArray(rows)) { console.log('Not array:', rows); setLoading(false); return; }
 
         // ── Merge all platforms into single campaign+date rows (for charts) ──
         const merged = {};
@@ -1312,6 +1327,7 @@ function useMetaData() {
           if (!byCampaign[row.campaign]) byCampaign[row.campaign] = [];
           byCampaign[row.campaign].push({
             date:`${row.date.slice(5,7)}/${row.date.slice(8,10)}`,
+            isoDate: row.date,
             impressions:row.impressions, reach:row.reach,
             spend:Math.round(row.spend*100)/100,
             linkClicks:row.linkClicks, shares:row.shares,
@@ -1327,24 +1343,12 @@ function useMetaData() {
           name:name.length>32?name.slice(0,32)+'…':name, data,
         }));
 
-        // If no campaigns returned, reuse last known campaigns with zeroed data
-        if (!campaignList.length && lastCampaigns.current.length) {
-          const n = Math.max(1, Math.round((new Date(endDate) - new Date(startDate)) / 86400000) + 1);
-          campaignList = lastCampaigns.current.map(c => ({
-            ...c,
-            data: Array.from({ length: n }, (_, i) => {
-              const d = new Date(startDate); d.setDate(d.getDate() + i);
-              return {
-                date: `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`,
-                impressions:0, reach:0, spend:0, linkClicks:0,
-                shares:0, comments:0, saves:0, reactions:0, leads:0,
-              };
-            }),
-          }));
-        } else if (campaignList.length) {
-          lastCampaigns.current = campaignList;
+        // If no campaigns returned at all, nothing to show
+        if (!campaignList.length) {
+          setData({ campaigns: [], byPlatform: [] });
+          setLoading(false);
+          return;
         }
-
         // ── Platform breakdown totals (for breakdown table) ──
         const byPlatform = {};
         rows.forEach(row => {
@@ -1681,8 +1685,23 @@ function MetaPaidTab() {
   const accent = "#95C93D";
   const campaigns = data?.campaigns;
 
-  if (loading) return <Spinner accent={accent} label="META PAID"/>;
-  if (!campaigns?.length) return null;
+  if (loading || data === null) return <Spinner accent={accent} label="META PAID"/>;
+  if (!campaigns?.length) return (
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+      padding:"60px 20px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif",
+      fontSize:13, letterSpacing:"0.1em", textTransform:"uppercase", gap:12 }}>
+      <div style={{ fontSize:28, opacity:0.3 }}>◈</div>
+      <div>No paid campaign data found</div>
+    </div>
+  );
+  if (!campaigns?.length) return (
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+      padding:"60px 20px", color:B.textMuted, fontFamily:"'Barlow Condensed',sans-serif",
+      fontSize:13, letterSpacing:"0.1em", textTransform:"uppercase", gap:12 }}>
+      <div style={{ fontSize:28, opacity:0.3 }}>◈</div>
+      <div>No paid campaign data found</div>
+    </div>
+  );
 
   return (
     <>
