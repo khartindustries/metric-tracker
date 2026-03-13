@@ -1214,10 +1214,8 @@ function GoogleTab() {
 
 // ─── TOP-LEVEL NAV ────────────────────────────────────────────────────────────
 const NAV = [
-  { id:"google",    label:"Google",             accent:B.hartyGreen  },
-  { id:"metaPaid",  label:"Meta — Paid",        accent:"#95C93D"     },
-  { id:"fbOrganic", label:"Facebook",            accent:"#6BA82E"     },
-  { id:"igOrganic", label:"Instagram — Organic",accent:B.spyderGreen },
+  { id:"google", label:"Google",  accent:B.hartyGreen },
+  { id:"meta",   label:"Meta",    accent:"#95C93D"    },
 ];
 
 // ─── DATE RANGE CONTROL ───────────────────────────────────────────────────────
@@ -1680,7 +1678,34 @@ function InstagramOrganicSection() {
 }
 
 // ─── META TAB (PAID) ──────────────────────────────────────────────────────────
-function MetaPaidTab() {
+// ─── META TAB (PAID + FACEBOOK + INSTAGRAM) ──────────────────────────────────
+function MetaTab() {
+  const bp = useBreakpoint();
+  const sectionHeader = (label, accent) => (
+    <div style={{
+      display:"flex", alignItems:"center", gap:12, margin:"28px 0 16px",
+    }}>
+      <div style={{ width:4, height:22, borderRadius:2, background:accent, flexShrink:0 }}/>
+      <div style={{ fontSize:11, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700,
+        letterSpacing:"0.15em", textTransform:"uppercase", color:accent }}>
+        {label}
+      </div>
+      <div style={{ flex:1, height:1, background:accent, opacity:0.2 }}/>
+    </div>
+  );
+  return (
+    <div>
+      {sectionHeader("Meta — Paid", "#95C93D")}
+      <MetaPaidTab/>
+      {sectionHeader("Facebook", "#6BA82E")}
+      <OrganicFacebookSection/>
+      {sectionHeader("Instagram — Organic", B.spyderGreen)}
+      <InstagramOrganicSection/>
+    </div>
+  );
+}
+
+// ─── META PAID TAB ────────────────────────────────────────────────────────────
   const { data, loading } = useMetaData();
   const accent = "#95C93D";
   const campaigns = data?.campaigns;
@@ -1813,10 +1838,8 @@ export default function App() {
           </div>
 
           {/* Tab content */}
-          {activeTab === "google"    && <GoogleTab/>}
-          {activeTab === "metaPaid"  && <MetaPaidTab/>}
-          {activeTab === "fbOrganic" && <OrganicFacebookSection/>}
-          {activeTab === "igOrganic" && <InstagramOrganicSection/>}
+          {activeTab === "google" && <GoogleTab/>}
+          {activeTab === "meta"   && <MetaTab/>}
         </div>
       </div>
     </DashContext.Provider>
