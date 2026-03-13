@@ -1706,6 +1706,7 @@ function MetaTab() {
 }
 
 // ─── META PAID TAB ────────────────────────────────────────────────────────────
+function MetaPaidTab() {
   const { data, loading } = useMetaData();
   const accent = "#95C93D";
   const campaigns = data?.campaigns;
