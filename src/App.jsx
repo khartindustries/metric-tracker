@@ -1216,7 +1216,7 @@ function GoogleTab() {
 const NAV = [
   { id:"google",    label:"Google",             accent:B.hartyGreen  },
   { id:"metaPaid",  label:"Meta — Paid",        accent:"#95C93D"     },
-  { id:"fbOrganic", label:"Facebook — Organic", accent:"#6BA82E"     },
+  { id:"fbOrganic", label:"Facebook",            accent:"#6BA82E"     },
   { id:"igOrganic", label:"Instagram — Organic",accent:B.spyderGreen },
 ];
 
