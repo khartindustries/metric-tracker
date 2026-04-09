@@ -57,9 +57,8 @@ function generateDays(n, seeds, seedBase = 1) {
   return Array.from({ length: n }, (_, i) => {
     const d = new Date(today); d.setDate(d.getDate() - (n - 1 - i));
     const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const isoDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const trend = 0.62 + (i / n) * 0.76;
-    return { date: label, isoDate, ...Object.fromEntries(Object.entries(seeds).map(([k, s]) => [k, Math.max(1, Math.round(s * (0.72 + rand() * 0.56) * trend))])) };
+    return { date: label, ...Object.fromEntries(Object.entries(seeds).map(([k, s]) => [k, Math.max(1, Math.round(s * (0.72 + rand() * 0.56) * trend))])) };
   });
 }
 
@@ -1374,7 +1373,31 @@ function useMetaData() {
   return { data, loading };
 }
 
-// ─── PAGE INSIGHTS HOOK ──────────────────────────────────────────────────────
+// ─── META ALL LEVELS HOOK ─────────────────────────────────────────────────────
+function useMetaAllLevels() {
+  const { startDate, endDate } = useDash();
+  const [adsets, setAdsets] = useState(null);
+  const [ads,    setAds]    = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setAdsets(null);
+    setAds(null);
+    Promise.all([
+      fetch(`${API_BASE}/api/meta-adsets?start=${startDate}&end=${endDate}`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/meta-ads?start=${startDate}&end=${endDate}`).then(r=>r.json()),
+    ]).then(([adsetRows, adRows]) => {
+      setAdsets(Array.isArray(adsetRows) ? adsetRows : []);
+      setAds(Array.isArray(adRows) ? adRows : []);
+      setLoading(false);
+    }).catch(err => { console.error('Meta levels error:', err); setLoading(false); });
+  }, [startDate, endDate]);
+
+  return { adsets, ads, loading };
+}
+
+
 function usePageData() {
   const { startDate, endDate } = useDash();
   const [data, setData]     = useState([]);
@@ -1651,11 +1674,125 @@ function MetaTab() {
   );
 }
 
+// ─── META DRILL-DOWN HELPERS ──────────────────────────────────────────────────
+const DRILL_METRICS = ["impressions","reach","spend","linkClicks","leads","reactions","comments","shares","saves"];
+const DRILL_LABEL   = { impressions:"Impressions", reach:"Reach", spend:"Spend", linkClicks:"Link Clicks", leads:"Leads", reactions:"Reactions", comments:"Comments", shares:"Shares", saves:"Saves" };
+const DRILL_COLORS  = ["#95C93D","#6BA82E","#48582C","#7EC850","#3A7020","#B8E05A","#2D5518","#A0D040","#5A9028"];
+
+function fmtDrillVal(k, v) {
+  if (k === "spend") return `$${v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  return v.toLocaleString();
+}
+
+function aggregateRows(rows, groupKey) {
+  const map = {};
+  rows.forEach(row => {
+    const key = row[groupKey];
+    if (!map[key]) map[key] = { name:key, impressions:0, reach:0, spend:0, linkClicks:0, leads:0, reactions:0, comments:0, shares:0, saves:0 };
+    DRILL_METRICS.forEach(m => { map[key][m] = (map[key][m]||0) + (row[m]||0); });
+  });
+  return Object.values(map).map(r => ({ ...r, spend: Math.round(r.spend*100)/100 }));
+}
+
+function buildTimeSeries(rows, groupKey, startDate, endDate) {
+  const groups = [...new Set(rows.map(r => r[groupKey]))];
+  const scaffold = {};
+  const [sy,sm,sd] = startDate.split('-').map(Number);
+  const [ey,em,ed] = endDate.split('-').map(Number);
+  for (let d = new Date(sy,sm-1,sd); d <= new Date(ey,em-1,ed); d.setDate(d.getDate()+1)) {
+    const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const label = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    scaffold[iso] = { date:label, isoDate:iso };
+    groups.forEach(g => { scaffold[iso][g] = 0; });
+  }
+  rows.forEach(row => {
+    if (scaffold[row.date]) scaffold[row.date][row[groupKey]] = (scaffold[row.date][row[groupKey]]||0) + (row.impressions||0);
+  });
+  return { scaffold: Object.values(scaffold), groups };
+}
+
+function DrillTable({ rows, accent, onRowClick }) {
+  const thStyle = { padding:"9px 14px", fontSize:9, fontFamily:"'Barlow Condensed',sans-serif",
+    textTransform:"uppercase", letterSpacing:"0.12em", borderBottom:`1px solid ${B.border}`,
+    fontWeight:600, color:B.textMuted, whiteSpace:"nowrap" };
+  if (!rows.length) return null;
+  return (
+    <div style={{ background:B.bg, borderRadius:6, border:`1px solid ${B.border}`, overflow:"auto", marginTop:14 }}>
+      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+        <thead>
+          <tr style={{ background:B.surface }}>
+            <th style={{ ...thStyle, textAlign:"left" }}>Name</th>
+            {DRILL_METRICS.map(k => <th key={k} style={{ ...thStyle, textAlign:"right" }}>{DRILL_LABEL[k]}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row,i) => (
+            <tr key={i} style={{ borderBottom:`1px solid ${B.border}`, cursor: onRowClick?"pointer":"default" }}
+              onMouseEnter={e=>e.currentTarget.style.background=B.surface}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}
+              onClick={() => onRowClick && onRowClick(row.name)}>
+              <td style={{ padding:"9px 14px", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, fontSize:11,
+                color: onRowClick ? accent : B.textPrimary }}>
+                {onRowClick && <span style={{ marginRight:6, opacity:0.6 }}>›</span>}
+                {row.name}
+              </td>
+              {DRILL_METRICS.map(k => (
+                <td key={k} style={{ padding:"9px 14px", textAlign:"right",
+                  fontFamily:"'Barlow Condensed',sans-serif", color:B.textSecond, fontWeight:600 }}>
+                  {fmtDrillVal(k, row[k]||0)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function DrillCharts({ rows, groupKey, startDate, endDate, accent }) {
+  const bp = useBreakpoint();
+  const groups = [...new Set(rows.map(r => r[groupKey]))];
+  const colors = DRILL_COLORS;
+
+  // Build campaigns array for CampaignAreaChart
+  const byGroup = {};
+  rows.forEach(row => {
+    const g = row[groupKey];
+    if (!byGroup[g]) byGroup[g] = [];
+    byGroup[g].push({ ...row, isoDate: row.date, date: `${row.date.slice(5,7)}/${row.date.slice(8,10)}` });
+  });
+  const campaigns = groups.map((g,i) => ({
+    id: `drill_${i}`, name: g.length>32?g.slice(0,32)+'…':g,
+    color: colors[i%colors.length],
+    data: byGroup[g] || [],
+  }));
+
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:bp.isMobile?"1fr":"1fr 1fr", gap:14, marginTop:14 }}>
+      {["impressions","reach","spend","linkClicks"].map(metric => (
+        <ChartCard key={metric} title={`${DRILL_LABEL[metric]} over Time`} accent={accent}>
+          <CampaignAreaChart campaigns={campaigns} dataKey={metric} height={160}
+            fmtVal={metric==="spend"?(_,v)=>`$${fmtD(v)}`:undefined}/>
+        </ChartCard>
+      ))}
+    </div>
+  );
+}
+
 // ─── META PAID TAB ────────────────────────────────────────────────────────────
 function MetaPaidTab() {
-  const { data, loading } = useMetaData();
-  const accent = "#95C93D";
+  const { data, loading }                   = useMetaData();
+  const { adsets, ads, loading: loadingDrill } = useMetaAllLevels();
+  const { startDate, endDate }              = useDash();
+  const accent   = "#95C93D";
   const campaigns = data?.campaigns;
+
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [selectedAdset,    setSelectedAdset]    = useState(null);
+
+  // Reset drill-down when date range changes
+  useEffect(() => { setSelectedCampaign(null); setSelectedAdset(null); }, [startDate, endDate]);
 
   if (loading || data === null) return <Spinner accent={accent} label="META PAID"/>;
   if (!campaigns?.length) return (
@@ -1667,10 +1804,90 @@ function MetaPaidTab() {
     </div>
   );
 
+  // ── Breadcrumb ──
+  const crumbStyle = { fontSize:11, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700,
+    letterSpacing:"0.08em", textTransform:"uppercase", cursor:"pointer", color:B.textMuted,
+    transition:"color 0.15s" };
+  const crumbActive = { ...crumbStyle, color:accent, cursor:"default" };
+  const sep = <span style={{ color:B.border, margin:"0 6px" }}>›</span>;
+
+  const breadcrumb = (
+    <div style={{ display:"flex", alignItems:"center", marginBottom:16, flexWrap:"wrap", gap:4 }}>
+      <span style={selectedCampaign ? crumbStyle : crumbActive}
+        onClick={() => { setSelectedCampaign(null); setSelectedAdset(null); }}>
+        Campaigns
+      </span>
+      {selectedCampaign && <>{sep}
+        <span style={selectedAdset ? crumbStyle : crumbActive}
+          onClick={() => setSelectedAdset(null)}>
+          {selectedCampaign.length>40?selectedCampaign.slice(0,40)+'…':selectedCampaign}
+        </span>
+      </>}
+      {selectedAdset && <>{sep}
+        <span style={crumbActive}>
+          {selectedAdset.length>40?selectedAdset.slice(0,40)+'…':selectedAdset}
+        </span>
+      </>}
+    </div>
+  );
+
+  // ── Campaign level ──
+  if (!selectedCampaign) {
+    return (
+      <>
+        <LiveSection campaigns={campaigns} {...META_PAID_CONFIG}/>
+        <PlatformBreakdownTable byPlatform={data?.byPlatform}/>
+        {/* Campaign drill-down table */}
+        <div style={{ marginTop:28 }}>
+          <div style={{ fontSize:11, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700,
+            color:B.textSecond, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:10 }}>
+            Campaigns — click to drill down
+          </div>
+          {loadingDrill ? <Spinner accent={accent} label="DRILL-DOWN"/> : (
+            <DrillTable
+              rows={aggregateRows(adsets||[], 'campaign').map(r => ({
+                ...r,
+                _clickable: true,
+                onClick: () => setSelectedCampaign(r.name),
+              }))}
+              accent={accent}
+              onRowClick={name => setSelectedCampaign(name)}
+            />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // ── Ad Set level ──
+  const adsetRows = (adsets||[]).filter(r => r.campaign === selectedCampaign);
+  if (!selectedAdset) {
+    return (
+      <>
+        {breadcrumb}
+        <DrillCharts rows={adsetRows} groupKey="adset" startDate={startDate} endDate={endDate} accent={accent}/>
+        <DrillTable
+          rows={aggregateRows(adsetRows, 'adset').map(r => ({ ...r }))}
+          accent={accent}
+          onRowClick={name => setSelectedAdset(name)}
+        />
+        <div style={{ fontSize:9, fontFamily:"'Barlow Condensed',sans-serif", color:B.textMuted,
+          marginTop:8, letterSpacing:"0.08em" }}>Click a row to drill into ads</div>
+      </>
+    );
+  }
+
+  // ── Ad level ──
+  const adRows = (ads||[]).filter(r => r.campaign === selectedCampaign && r.adset === selectedAdset);
   return (
     <>
-      <LiveSection campaigns={campaigns} {...META_PAID_CONFIG}/>
-      <PlatformBreakdownTable byPlatform={data?.byPlatform}/>
+      {breadcrumb}
+      <DrillCharts rows={adRows} groupKey="ad" startDate={startDate} endDate={endDate} accent={accent}/>
+      <DrillTable
+        rows={aggregateRows(adRows, 'ad')}
+        accent={accent}
+        onRowClick={null}
+      />
     </>
   );
 }

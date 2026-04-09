@@ -316,6 +316,36 @@ app.get('/api/meta/instagram', async (req, res) => {
   }
 });
 
+app.get('/api/debug/adsets', async (req, res) => {
+  const start = req.query.start || (() => { const d = new Date(); d.setDate(d.getDate()-30); return d.toISOString().slice(0,10); })();
+  const end   = req.query.end   || new Date().toISOString().slice(0,10);
+  try {
+    const url = `https://graph.facebook.com/v19.0/${process.env.META_AD_ACCOUNT_ID}/insights`
+      + `?fields=campaign_name,adset_name,impressions,reach,spend,actions`
+      + `&level=adset&time_increment=1`
+      + `&time_range={"since":"${start}","until":"${end}"}`
+      + `&access_token=${process.env.META_ACCESS_TOKEN}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    res.json(j);
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/debug/ads', async (req, res) => {
+  const start = req.query.start || (() => { const d = new Date(); d.setDate(d.getDate()-30); return d.toISOString().slice(0,10); })();
+  const end   = req.query.end   || new Date().toISOString().slice(0,10);
+  try {
+    const url = `https://graph.facebook.com/v19.0/${process.env.META_AD_ACCOUNT_ID}/insights`
+      + `?fields=campaign_name,adset_name,ad_name,impressions,reach,spend,actions`
+      + `&level=ad&time_increment=1`
+      + `&time_range={"since":"${start}","until":"${end}"}`
+      + `&access_token=${process.env.META_ACCESS_TOKEN}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    res.json(j);
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
 app.listen(8080, () => {
   console.log('✅ API server running at http://localhost:8080');
 });
