@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const analyticsdata = google.analyticsdata('v1beta');
     const response = await analyticsdata.properties.runReport({
       auth: oauth2Client,
-      property: `properties/${process.env.GA4_PROPERTY_ID}`,
+      property: `properties/${process.env.GOOGLE_GA4_PROPERTY_ID}`,
       requestBody: {
         dateRanges: [{ startDate, endDate }],
         dimensions: [
