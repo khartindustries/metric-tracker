@@ -54,13 +54,16 @@ export default async function handler(req, res) {
       date:        row.dimensionValues[0].value,
       channel:     row.dimensionValues[1].value,
       sessions:    parseInt(row.metricValues[0].value),
-      users:       userByDate[row.dimensionValues[0].value] || 0,
+      users:       parseInt(row.metricValues[1].value),
       pageviews:   parseInt(row.metricValues[2].value),
       conversions: parseInt(row.metricValues[3].value),
       avgDuration: Math.round(parseFloat(row.metricValues[4].value)),
     }));
 
-    res.status(200).json(rows);
+    // Send deduplicated daily user totals separately for accurate user count display
+    const userTotals = Object.entries(userByDate).map(([date, users]) => ({ date, users }));
+
+    res.status(200).json({ rows, userTotals });
   } catch (err) {
     console.error('GA4 Error:', err.message);
     res.status(500).json({ error: err.message });
