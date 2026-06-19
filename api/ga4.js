@@ -14,15 +14,14 @@ export default async function handler(req, res) {
 
   try {
     const analyticsdata = google.analyticsdata('v1beta');
+
+    // Fetch channel breakdown for charts
     const response = await analyticsdata.properties.runReport({
       auth: oauth2Client,
       property: `properties/${process.env.GOOGLE_GA4_PROPERTY_ID}`,
       requestBody: {
         dateRanges: [{ startDate, endDate }],
-        dimensions: [
-          { name: 'date' },
-          { name: 'sessionDefaultChannelGroup' }
-        ],
+        dimensions: [{ name: 'date' }, { name: 'sessionDefaultChannelGroup' }],
         metrics: [
           { name: 'sessions' },
           { name: 'activeUsers' },
@@ -34,11 +33,28 @@ export default async function handler(req, res) {
       },
     });
 
+    // Fetch user total without channel to avoid cross-channel double counting
+    const userResponse = await analyticsdata.properties.runReport({
+      auth: oauth2Client,
+      property: `properties/${process.env.GOOGLE_GA4_PROPERTY_ID}`,
+      requestBody: {
+        dateRanges: [{ startDate, endDate }],
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }],
+        keepEmptyRows: false,
+      },
+    });
+
+    const userByDate = {};
+    (userResponse.data.rows || []).forEach(row => {
+      userByDate[row.dimensionValues[0].value] = parseInt(row.metricValues[0].value);
+    });
+
     const rows = (response.data.rows || []).map(row => ({
       date:        row.dimensionValues[0].value,
       channel:     row.dimensionValues[1].value,
       sessions:    parseInt(row.metricValues[0].value),
-      users:       parseInt(row.metricValues[1].value), // activeUsers
+      users:       userByDate[row.dimensionValues[0].value] || 0,
       pageviews:   parseInt(row.metricValues[2].value),
       conversions: parseInt(row.metricValues[3].value),
       avgDuration: Math.round(parseFloat(row.metricValues[4].value)),
