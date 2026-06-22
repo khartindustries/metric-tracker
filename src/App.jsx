@@ -1126,8 +1126,10 @@ function useGA4Data() {
         const channels = {};
         rows.forEach(row => {
           if (!channels[row.channel]) channels[row.channel] = [];
+          const y = row.date.slice(0,4), m = row.date.slice(4,6), d = row.date.slice(6,8);
           channels[row.channel].push({
-            date:        `${row.date.slice(4,6)}/${row.date.slice(6,8)}`,
+            date:        `${m}/${d}`,
+            isoDate:     `${y}-${m}-${d}`,
             sessions:    row.sessions,
             users:       row.users,
             pageviews:   row.pageviews,
@@ -1174,7 +1176,8 @@ function GoogleTab() {
   };
 
   const liveGA4Campaigns = useMemo(() => {
-    if (!ga4Data?.channels) return CAMPAIGNS.ga4;
+    if (!ga4Data?.channels) { console.log('GA4 no channels, ga4Data:', ga4Data); return CAMPAIGNS.ga4; }
+    console.log('GA4 channels:', Object.keys(ga4Data.channels));
     const seen = new Set();
     return Object.entries(ga4Data.channels)
       .map(([channel, rows]) => {
